@@ -1,0 +1,434 @@
+﻿<UserControl x:Class="Finally.Views.Dashboard"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:prism="http://prismlibrary.com/"             
+             xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             prism:ViewModelLocator.AutoWireViewModel="True">
+    <UserControl.Resources>
+        <Style x:Key="HiddenHeaderStyle" TargetType="{x:Type GridViewColumnHeader}">
+            <Setter Property="Visibility" Value="Collapsed"/>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Margin="8" Background="White">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Column="0" >
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="30"/>
+                <RowDefinition />
+                <RowDefinition Height="80"/>
+                <RowDefinition Height="200"/>
+            </Grid.RowDefinitions>
+            <StackPanel Grid.Row="0"
+                            Margin="0,0,0,0"
+                            Orientation="Horizontal">
+                <ComboBox Width="90"                          
+                          ItemsSource="{Binding Years}"
+                          SelectedValue="{Binding SelectedYear}"
+                          SelectedItem="{Binding SelectedYear, Mode=TwoWay}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="SelectionChanged">
+                            <prism:InvokeCommandAction 
+                            Command="{Binding YearSelectionChanged}" 
+                            TriggerParameterPath="AddedItems"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </ComboBox>
+                <ComboBox Width="50"
+                          Visibility="Hidden"
+                          ItemsSource="{Binding Months}"
+                          SelectedValue="{Binding SelectedMonth}"
+                          SelectedItem="{Binding SelectedMonth, Mode=TwoWay}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="SelectionChanged">
+                            <prism:InvokeCommandAction 
+                            Command="{Binding MonthSelectionChanged}" 
+                            TriggerParameterPath="AddedItems"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </ComboBox>
+            </StackPanel>
+            <ComboBox Grid.Row="1"
+                      Margin="0,0,0,4"
+                      ItemsSource="{Binding Sections}"
+                      DisplayMemberPath="Name"
+                      SelectedValuePath="Code"
+                      SelectedValue="{Binding SelectedSectionCode}"
+                      SelectedItem="{Binding SelectedSection, Mode=TwoWay}">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="SelectionChanged">
+                        <prism:InvokeCommandAction Command="{Binding SectionSelectionChanged}" />
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </ComboBox>
+
+            <ListBox Grid.Row="2"
+                     ItemsSource="{Binding Employees}"
+                     SelectedItem="{Binding SelectedEmployee, Mode=TwoWay}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding Name}" />
+                            <TextBlock Text="{Binding Code}" Margin="4,0,0,0"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="SelectionChanged">
+                        <prism:InvokeCommandAction 
+                            Command="{Binding EmployeeSelectionChanged}" 
+                            TriggerParameterPath="AddedItems"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </ListBox>
+
+            <Grid Grid.Row="3"
+                  VerticalAlignment="Top">
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="40"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="40"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0"
+                                       Text="{Binding ProgressLevelMax.Symbol}" 
+                                       VerticalAlignment="Center"/>
+                <Slider Grid.Column="1" 
+                        Margin="4"
+                        TickFrequency="1"
+                        IsSnapToTickEnabled="True"
+                        Value="{Binding SelectedProgressLevel}"
+                        Minimum="0"
+                        Maximum="6">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="ValueChanged">
+                            <prism:InvokeCommandAction 
+                                            Command="{Binding SelectedProgressLevelChanged}" />
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+
+                </Slider>
+
+                <TextBlock Grid.Column="2"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Right"
+                           Text="{Binding ProgressLevelMin.Symbol}"/>
+
+            </Grid>
+
+        </Grid>
+        <Grid Grid.Column="1"
+              Margin="20,0,0,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="340"/>
+                <RowDefinition Height="70"/>
+                <RowDefinition Height="30"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="50"/>
+                    <ColumnDefinition Width="320"/>
+                    <ColumnDefinition Width="290"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Border Grid.Column="1" 
+                        BorderBrush="Silver"
+                        BorderThickness="4,0,0,0"/>
+                <TextBlock Grid.Column="1" 
+                       Margin="10,0,0,0"
+                       VerticalAlignment="Center"
+                       FontWeight="Bold"
+                       FontSize="16"
+                       Text="売上高"/>
+                <Border Grid.Column="2" 
+                        BorderBrush="Silver"
+                        BorderThickness="4,0,0,0"/>
+                <TextBlock Grid.Column="2" 
+                       Margin="10,0,0,0"
+                       VerticalAlignment="Center"
+                       FontWeight="Bold"
+                       FontSize="16"
+                       Text="売上総利益"/>
+                <Border Grid.Column="3" 
+                        BorderBrush="Silver"
+                        BorderThickness="4,0,0,0"/>
+
+            </Grid>
+            <ListView Grid.Row="1" 
+                      Margin="0,10,0,0"
+                      ItemsSource="{Binding MonthlyTotals}"   
+                      SelectedItem="{Binding SelectedMonthlyTotal, Mode=TwoWay}">
+
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="年月" DisplayMemberBinding="{Binding YearMonth}" Width="50"/>
+                        <GridViewColumn Header="目標" Width="80">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding TargetSales, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="実績" Width="80">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding FinishedSales, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="予定" Width="80">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding UnfinishedSales, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="達成率" Width="80">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Controls:MetroProgressBar Value="{Binding SalesProgressRate, Mode=OneWay}"
+                                                               Maximum="100"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        
+                        <GridViewColumn Header="目標" Width="70">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding TargetProfit, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="実績" Width="70">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding FinishedProfit, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="予定" Width="70">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding UnfinishedProfit, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="達成率" Width="80">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Controls:MetroProgressBar Value="{Binding ProfitProgressRate, Mode=OneWay}"
+                                                               Maximum="100"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="経費" Width="60">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding MiscIncome ,StringFormat={}{0:#,0}}" 
+                                               HorizontalAlignment="Right" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="営業利益" Width="80">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding MiscIncome ,StringFormat={}{0:#,0}}" 
+                                               HorizontalAlignment="Right" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="営業外" Width="60">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding MiscIncome ,StringFormat={}{0:#,0}}" 
+                                               HorizontalAlignment="Right" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="経常利益" Width="80">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding MiscIncome ,StringFormat={}{0:#,0}}" 
+                                               HorizontalAlignment="Right" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                    </GridView>
+                </ListView.View>
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="SelectionChanged">
+                        <prism:InvokeCommandAction 
+                            Command="{Binding MonthlyTotalSelectionChanged}" 
+                            TriggerParameterPath="AddedItems"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </ListView>
+            <Border Grid.Row="2" 
+                        BorderBrush="Silver"
+                        BorderThickness="0,1,0,0"/>
+            <ListView Grid.Row="2" 
+                      Margin="0,10,0,0"
+                      ItemsSource="{Binding YearlyTotals}"   >
+
+                <ListView.View>
+                    <GridView ColumnHeaderContainerStyle="{StaticResource HiddenHeaderStyle}">
+                        <GridViewColumn Header="年月" DisplayMemberBinding="{Binding YearMonth}" Width="50"/>
+                        <GridViewColumn Header="目標" Width="80">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding TargetSales, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="実績" Width="80">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding FinishedSales, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="予定" Width="80">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding UnfinishedSales, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="達成率" Width="80">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Controls:MetroProgressBar Value="{Binding SalesProgressRate, Mode=OneWay}"
+                                                               Maximum="100"
+                                                               />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="目標" Width="70">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding TargetProfit, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="実績" Width="70">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding FinishedProfit, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="予定" Width="70">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding UnfinishedProfit, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="達成率" Width="80">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Controls:MetroProgressBar Value="{Binding ProfitProgressRate, Mode=OneWay}"
+                                                               Maximum="100"
+                                                               />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="経費" Width="60">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding MiscIncome ,StringFormat={}{0:#,0}}" 
+                                               HorizontalAlignment="Right" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="営業利益" Width="80">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding MiscIncome ,StringFormat={}{0:#,0}}" 
+                                               HorizontalAlignment="Right" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="営業外" Width="60">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding MiscIncome ,StringFormat={}{0:#,0}}" 
+                                               HorizontalAlignment="Right" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="経常利益" Width="80">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding MiscIncome ,StringFormat={}{0:#,0}}" 
+                                               HorizontalAlignment="Right" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                    </GridView>
+                </ListView.View>
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="MouseDoubleClick">
+                        <prism:InvokeCommandAction Command="{Binding OrderDoubleClickCommand}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </ListView>
+            <Border Grid.Row="3" 
+                        BorderBrush="Silver"
+                        BorderThickness="4,0,0,0"/>
+            <TextBlock Grid.Row="3"
+                       Margin="10,0,0,0"
+                       VerticalAlignment="Center"
+                       FontWeight="Bold"
+                       FontSize="16"
+                       Text="受注予定案件"/>
+
+            <Grid Grid.Row="4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <ListView Grid.Column="0" 
+                      Margin="0,10,0,0"
+                      ItemsSource="{Binding Cases}" Grid.RowSpan="2"    >
+
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="確度" DisplayMemberBinding="{Binding Symbol}" Width="35"/>
+                            <GridViewColumn Header="案件" DisplayMemberBinding="{Binding Name}" Width="150"/>
+                            <GridViewColumn Header="売上" Width="80">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding SalesPrice, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="粗利" Width="80">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding ProfitPrice, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                        </GridView>
+                    </ListView.View>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="MouseDoubleClick">
+                            <prism:InvokeCommandAction Command="{Binding OrderDoubleClickCommand}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </ListView>
+
+            </Grid>
+
+        </Grid>
+    </Grid>
+</UserControl>
