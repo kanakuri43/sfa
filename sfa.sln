@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Split", "Split\Split.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Finally", "Finally\Finally.csproj", "{7BEDFF91-7B83-7CAF-6AA9-2F55EE88180F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Customer", "Customer\Customer.csproj", "{C9091A0A-86EB-47D3-8DC3-6A329D66B2C5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{7BEDFF91-7B83-7CAF-6AA9-2F55EE88180F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7BEDFF91-7B83-7CAF-6AA9-2F55EE88180F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7BEDFF91-7B83-7CAF-6AA9-2F55EE88180F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C9091A0A-86EB-47D3-8DC3-6A329D66B2C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C9091A0A-86EB-47D3-8DC3-6A329D66B2C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C9091A0A-86EB-47D3-8DC3-6A329D66B2C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C9091A0A-86EB-47D3-8DC3-6A329D66B2C5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

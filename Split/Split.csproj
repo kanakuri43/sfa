@@ -5,10 +5,7 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="config.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="config.xml">
+    <Content Include="..\sfa\config.xml" Link="config.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

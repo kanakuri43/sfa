@@ -4,8 +4,9 @@
     <!-- 
     <ConnectionString>Data Source=mydatabasejp-NLB-b505df893138d5e6.elb.ap-northeast-1.amazonaws.com;Initial Catalog=PSM_V6_NET;User ID=admin;Password=Sapassword1;TrustServerCertificate=true</ConnectionString>
     <ConnectionString>Data Source=localhost;Initial Catalog=PSM_V6_NET;User ID=sa;Password=Sapassword1;TrustServerCertificate=true</ConnectionString>
+    <ConnectionString>Data Source=172.16.3.168;Initial Catalog=PSM_V6_NET;User ID=sa;Password=Sapassword1;TrustServerCertificate=true</ConnectionString>
     -->
-	  <ConnectionString>Data Source=mydatabasejp-NLB-b505df893138d5e6.elb.ap-northeast-1.amazonaws.com;Initial Catalog=PSM_V6_NET;User ID=admin;Password=Sapassword1;TrustServerCertificate=true</ConnectionString>
+    <ConnectionString>Data Source=172.16.3.168;Initial Catalog=PSM_V6_NET;User ID=sa;Password=Sapassword1;TrustServerCertificate=true</ConnectionString>
 
   </Database>
 	
