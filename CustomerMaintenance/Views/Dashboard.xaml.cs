@@ -1,6 +1,6 @@
 ﻿using System.Windows.Controls;
 
-namespace Customer.Views
+namespace CustomerMaintenance.Views
 {
     /// <summary>
     /// Interaction logic for Dashboard

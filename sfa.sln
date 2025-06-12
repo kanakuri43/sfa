@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36109.1 d17.14
+VisualStudioVersion = 17.14.36109.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sfa", "sfa\sfa.csproj", "{E130EBFF-6A55-469F-8596-FCA034B065F5}"
 EndProject
@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Split", "Split\Split.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Finally", "Finally\Finally.csproj", "{7BEDFF91-7B83-7CAF-6AA9-2F55EE88180F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Customer", "Customer\Customer.csproj", "{C9091A0A-86EB-47D3-8DC3-6A329D66B2C5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomerMaintenance", "CustomerMaintenance\CustomerMaintenance.csproj", "{D200D41D-0C1A-4071-AEA6-AABE4D053DFF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,10 +29,10 @@ Global
 		{7BEDFF91-7B83-7CAF-6AA9-2F55EE88180F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7BEDFF91-7B83-7CAF-6AA9-2F55EE88180F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7BEDFF91-7B83-7CAF-6AA9-2F55EE88180F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C9091A0A-86EB-47D3-8DC3-6A329D66B2C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C9091A0A-86EB-47D3-8DC3-6A329D66B2C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C9091A0A-86EB-47D3-8DC3-6A329D66B2C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C9091A0A-86EB-47D3-8DC3-6A329D66B2C5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D200D41D-0C1A-4071-AEA6-AABE4D053DFF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D200D41D-0C1A-4071-AEA6-AABE4D053DFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D200D41D-0C1A-4071-AEA6-AABE4D053DFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D200D41D-0C1A-4071-AEA6-AABE4D053DFF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

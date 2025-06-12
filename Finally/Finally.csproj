@@ -5,6 +5,10 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="..\sfa\Models\Employee.cs" Link="Models\Employee.cs" />
+    <Compile Include="..\sfa\Models\Section.cs" Link="Models\Section.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <Content Include="..\sfa\config.xml" Link="config.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

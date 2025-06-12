@@ -8,6 +8,7 @@ using System.Linq;
 using System.Windows.Data;
 using Finally.Models;
 using Microsoft.EntityFrameworkCore;
+using sfa.Models;
 
 namespace Finally.ViewModels
 {

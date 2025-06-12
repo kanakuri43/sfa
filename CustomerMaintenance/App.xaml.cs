@@ -1,8 +1,8 @@
-﻿using Customer.Views;
+﻿using CustomerMaintenance.Views;
 using Prism.Ioc;
 using System.Windows;
 
-namespace Customer
+namespace CustomerMaintenance
 {
     /// <summary>
     /// Interaction logic for App.xaml
@@ -20,4 +20,3 @@ namespace Customer
         }
     }
 }
-

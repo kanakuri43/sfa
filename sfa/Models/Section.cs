@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Finally.Models
+namespace sfa.Models
 {
     [Table("M部門")]
 

@@ -1,7 +1,7 @@
-﻿using System.Windows;
-using MahApps.Metro.Controls;
+﻿using MahApps.Metro.Controls;
+using System.Windows;
 
-namespace Customer.Views
+namespace CustomerMaintenance.Views
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

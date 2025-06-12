@@ -5,16 +5,21 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Split.Models
+namespace sfa.Models
 {
-    [Table("M部門")]
+    [Table("M社員")]
 
-    public class Section
+    public class Employee
     {
         [Column("コード")]
-        public int Code { get; set; }
-        [Column("名称")]
+        public Int16 Code { get; set; }
+
+        [Column("部門コード")]
+        public int SectionCode { get; set; }
+
+        [Column("氏名")]
         public string Name { get; set; }
+
         [Column("削除区分")]
         public byte State { get; set; }
     }

@@ -1,7 +1,7 @@
-﻿<prism:PrismApplication x:Class="Customer.App"
+﻿<prism:PrismApplication x:Class="CustomerMaintenance.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:Customer"
+             xmlns:local="clr-namespace:CustomerMaintenance"
              xmlns:prism="http://prismlibrary.com/" >
     <Application.Resources>
         <ResourceDictionary>
