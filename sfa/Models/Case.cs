@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Finally.Models
+namespace sfa.Models
 {
 
     public class Case
@@ -15,7 +15,10 @@ namespace Finally.Models
         [Column("削除区分")]
         public byte State { get; set; }
         [Column("名称")]
-        public string Name { get; set; }
+        public string CaseName { get; set; }
+        public int CustomerCode { get; set; }
+        public string CustomerName { get; set; }
+
         [Column("受注月度")]
         public int OrderYearMonth { get; set; }
         [Column("売上月度")]
@@ -30,7 +33,6 @@ namespace Finally.Models
         public string Symbol { get; set; }
         [Column("物件確度区分")]
         public byte Level { get; set; }
-
 
 
     }

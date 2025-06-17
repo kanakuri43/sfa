@@ -5,6 +5,7 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="..\sfa\Models\Case.cs" Link="Models\Case.cs" />
     <Compile Include="..\sfa\Models\Employee.cs" Link="Models\Employee.cs" />
     <Compile Include="..\sfa\Models\Section.cs" Link="Models\Section.cs" />
   </ItemGroup>

@@ -18,8 +18,10 @@ namespace CustomerMaintenance.ViewModels
         private ObservableCollection<Customer> _customers;
         private Section _selectedSection;
         private Employee _selectedEmployee;
+        private Customer _selectedCustomer;
         private ObservableCollection<Section> _sections;
         private ObservableCollection<Employee> _employees;
+        private ObservableCollection<Case> _cases;
 
         public Section SelectedSection
         {
@@ -31,6 +33,11 @@ namespace CustomerMaintenance.ViewModels
         {
             get { return _selectedEmployee; }
             set { SetProperty(ref _selectedEmployee, value); }
+        }
+        public Customer SelectedCustomer
+        {
+            get { return _selectedCustomer; }
+            set { SetProperty(ref _selectedCustomer, value); }
         }
 
         public ObservableCollection<Customer> Customers
@@ -48,9 +55,15 @@ namespace CustomerMaintenance.ViewModels
             get { return _employees; }
             set { SetProperty(ref _employees, value); }
         }
+        public ObservableCollection<Case> Cases
+        {
+            get { return _cases; }
+            set { SetProperty(ref _cases, value); }
+        }
 
         public DelegateCommand SectionSelectionChanged { get; }
         public DelegateCommand EmployeeSelectionChanged { get; }
+        public DelegateCommand CustomerSelectionChanged { get; }
 
         public DashboardViewModel(IRegionManager regionManager)
         {
@@ -58,6 +71,7 @@ namespace CustomerMaintenance.ViewModels
 
             SectionSelectionChanged = new DelegateCommand(SectionSelectionChangedExecute);
             EmployeeSelectionChanged = new DelegateCommand(EmployeeSelectionChangedExecute);
+            CustomerSelectionChanged = new DelegateCommand(CustomerSelectionChangedExecute);
 
 
             using (var context = new AppDbContext())
@@ -125,6 +139,46 @@ namespace CustomerMaintenance.ViewModels
                 );
             }
         }
+        private void FetchCaseList()
+        {
+            using (var context = new AppDbContext())
+            {
+                var sql = @"
+                    SELECT
+                        C.*
+                        , 0 AS CustomerCode
+                        , '' AS CustomerName
+                        , 記号
+                        , 物件確度区分                    
+                    FROM
+                        D物件 AS C 
+                        INNER JOIN D物件顧客 AS CC 
+                            ON C.連番 = CC.物件連番 
+                            AND CC.顧客連番 = {0} 
+                        INNER JOIN D物件担当 AS CS 
+                            ON C.連番 = CS.物件連番 
+                            AND CS.社員コード = {1} 
+                        LEFT JOIN M物件確度 
+                            ON C.物件確度 = M物件確度.コード 
+                    WHERE
+                        C.削除区分 = 0
+                        ";
+                var c = context.Database.SqlQueryRaw<Case>(
+                                    sql,
+                                    this.SelectedCustomer.Id,
+                                    this.SelectedEmployee.Code
+                                ).ToList();
+                if (c == null)
+                {
+                    return;
+                }
+                else
+                {
+                    this.Cases = new ObservableCollection<Case>(c.OrderByDescending(c => c.Id));
+                    ;
+                }
+            }
+        }
 
         private void SectionSelectionChangedExecute()
         {
@@ -133,6 +187,10 @@ namespace CustomerMaintenance.ViewModels
         private void EmployeeSelectionChangedExecute()
         {
             FetchCustomerList();
+        }
+        private void CustomerSelectionChangedExecute()
+        {
+            FetchCaseList();
         }
 
         public bool IsNavigationTarget(NavigationContext navigationContext)

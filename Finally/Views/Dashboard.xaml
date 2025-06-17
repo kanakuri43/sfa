@@ -403,7 +403,7 @@
                     <ListView.View>
                         <GridView>
                             <GridViewColumn Header="確度" DisplayMemberBinding="{Binding Symbol}" Width="35"/>
-                            <GridViewColumn Header="案件" DisplayMemberBinding="{Binding Name}" Width="150"/>
+                            <GridViewColumn Header="案件" DisplayMemberBinding="{Binding CustomerName}" Width="150"/>
                             <GridViewColumn Header="売上" Width="80">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>

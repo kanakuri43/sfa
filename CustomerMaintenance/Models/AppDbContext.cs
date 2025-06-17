@@ -15,6 +15,7 @@ namespace CustomerMaintenance.Models
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Section> Sections { get; set; }
         public DbSet<Customer> Customers { get; set; }
+        public DbSet<Case> Cases { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
