@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using Microsoft.EntityFrameworkCore;
 using sfa.Models;
+using Split.Models;
 
 namespace CustomerMaintenance.Models
 {
@@ -16,6 +17,7 @@ namespace CustomerMaintenance.Models
         public DbSet<Section> Sections { get; set; }
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Case> Cases { get; set; }
+        public DbSet<ProgressLevel> ProgressLevels { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

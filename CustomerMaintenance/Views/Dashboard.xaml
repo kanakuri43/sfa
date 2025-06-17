@@ -21,6 +21,9 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="30"/>
                 <RowDefinition />
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="30"/>
+                <RowDefinition />
             </Grid.RowDefinitions>
             <ComboBox Grid.Row="0"
                       Margin="0,0,0,4"
@@ -57,18 +60,41 @@
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
             </ListBox>
+            <CheckBox Grid.Row="2"
+                      Content="案件がある顧客のみ"/>
+            <TextBox Grid.Row="3" 
+                     Controls:TextBoxHelper.Watermark="名称検索"/>
+            <ListBox Grid.Row="4"
+                     Margin="0,10,0,0"
+                     SelectionMode="Multiple"
+                     ItemsSource="{Binding ProgressLevels}"
+                     SelectedItem="{Binding SelectedProgressLevels, Mode=TwoWay}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding Name}" />
+                            <TextBlock Text="{Binding Code}" Margin="4,0,0,0"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="SelectionChanged">
+                        <prism:InvokeCommandAction 
+                            Command="{Binding EmployeeSelectionChanged}" 
+                            TriggerParameterPath="AddedItems"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </ListBox>
+
 
         </Grid>
 
         <Grid Grid.Column="1"
               Margin="10,0,0,0">
             <Grid.RowDefinitions>
-                <RowDefinition Height="30"/>
-                <RowDefinition Height="30"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-            <TextBox Grid.Row="0" />
-            <ListView Grid.Row="2" 
+            <ListView Grid.Row="0" 
                       Margin="0,4,0,0"
                       ItemsSource="{Binding Customers}" 
                       SelectedItem="{Binding SelectedCustomer, Mode=TwoWay}">
@@ -86,8 +112,6 @@
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
             </ListView>
-            <CheckBox Grid.Row="1"
-                      Content="案件がある顧客のみ表示"/>
 
         </Grid>
         <Grid Grid.Column="2"

@@ -4,6 +4,7 @@ using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Regions;
 using sfa.Models;
+using Split.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -22,6 +23,7 @@ namespace CustomerMaintenance.ViewModels
         private ObservableCollection<Section> _sections;
         private ObservableCollection<Employee> _employees;
         private ObservableCollection<Case> _cases;
+        private ObservableCollection<ProgressLevel> _progressLevels;
 
         public Section SelectedSection
         {
@@ -60,6 +62,11 @@ namespace CustomerMaintenance.ViewModels
             get { return _cases; }
             set { SetProperty(ref _cases, value); }
         }
+        public ObservableCollection<ProgressLevel> ProgressLevels
+        {
+            get { return _progressLevels; }
+            set { SetProperty(ref _progressLevels, value); }
+        }
 
         public DelegateCommand SectionSelectionChanged { get; }
         public DelegateCommand EmployeeSelectionChanged { get; }
@@ -80,6 +87,11 @@ namespace CustomerMaintenance.ViewModels
                     context.Sections.Where(s => s.State == 0).ToList()
                 );
                 this.SelectedSection = context.Sections.FirstOrDefault(s => s.Code == 11010);
+
+                this.ProgressLevels = new ObservableCollection<ProgressLevel>(
+                                context.ProgressLevels.Where(s => s.State == 0).ToList()
+                            );
+
             }
 
             FetchEmployeeList();
