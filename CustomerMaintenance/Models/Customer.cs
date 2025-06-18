@@ -26,6 +26,9 @@ namespace CustomerMaintenance.Models
         [Column("住所2")]
         public string Address2 { get; set; }
 
+        [Column("TEL")]
+        public string Tel { get; set; }
+
         [Column("削除区分")]
         public byte State { get; set; }
     }
