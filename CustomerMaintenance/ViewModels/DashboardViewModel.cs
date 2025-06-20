@@ -20,6 +20,7 @@ namespace CustomerMaintenance.ViewModels
     {
         private readonly IRegionManager _regionManager;
         private ObservableCollection<Customer> _customers;
+        private ObservableCollection<ExtendedCustomerInfo> _extendedCustomerInfos;
         private Section _selectedSection;
         private Employee _selectedEmployee;
         private Customer _selectedCustomer;
@@ -50,6 +51,11 @@ namespace CustomerMaintenance.ViewModels
         {
             get { return _customers; }
             set { SetProperty(ref _customers, value); }
+        }
+        public ObservableCollection<ExtendedCustomerInfo> ExtendedCustomerInfos
+        {
+            get { return _extendedCustomerInfos; }
+            set { SetProperty(ref _extendedCustomerInfos, value); }
         }
         public ObservableCollection<Section> Sections
         {
@@ -108,30 +114,29 @@ namespace CustomerMaintenance.ViewModels
 
         private void PlotChart()
         {
-            // null安全な実装
             if (this.SalesHistories == null || !this.SalesHistories.Any())
             {
-                System.Diagnostics.Debug.WriteLine("SalesHistories is null or empty");
-                PlotModel = new OxyPlot.PlotModel { Title = "データなし" };
                 return;
             }
+
             try
             {
                 var newPlotModel = new OxyPlot.PlotModel();
 
-                // X軸（カテゴリ軸）
-                var xAxis = new OxyPlot.Axes.CategoryAxis
+                // カテゴリ軸（X軸）を設定 - 年度
+                var categoryAxis = new OxyPlot.Axes.CategoryAxis
                 {
                     Position = OxyPlot.Axes.AxisPosition.Bottom,
                     ItemsSource = this.SalesHistories.Select(s => s.Year.ToString()).ToList()
                 };
-                newPlotModel.Axes.Add(xAxis);
+                newPlotModel.Axes.Add(categoryAxis);
 
-                // Y軸
+                // 値軸（Y軸）を設定 - 売上・利益
                 var yAxis = new OxyPlot.Axes.LinearAxis()
                 {
                     Position = OxyPlot.Axes.AxisPosition.Left,
-                    StringFormat = "N0"
+                    StringFormat = "N0",
+                    Minimum = 0
                 };
                 newPlotModel.Axes.Add(yAxis);
 
@@ -143,36 +148,49 @@ namespace CustomerMaintenance.ViewModels
                 var accentColor = accentBrush != null ?
                     OxyColor.FromArgb(accentBrush.Color.A, accentBrush.Color.R, accentBrush.Color.G, accentBrush.Color.B) :
                     OxyColors.Blue;
+
                 var accent2Color = accent2Brush != null ?
                     OxyColor.FromArgb(accent2Brush.Color.A, accent2Brush.Color.R, accent2Brush.Color.G, accent2Brush.Color.B) :
                     OxyColors.Red;
 
-                // 売上の棒グラフシリーズ
-                var salesSeries = new OxyPlot.Series.ColumnSeries()
+                // 売上の縦棒グラフシリーズ
+                var salesSeries = new OxyPlot.Series.RectangleBarSeries()
                 {
-                    Title = "売上",
-                    ItemsSource = this.SalesHistories,
-                    ValueField = "Sales",
-                    FillColor = accentColor,
-                    StrokeColor = OxyColors.White,
-                    StrokeThickness = 1
-                };
-                newPlotModel.Series.Add(salesSeries);
-
-                // 利益の棒グラフシリーズ
-                var profitSeries = new OxyPlot.Series.ColumnSeries()
-                {
-                    Title = "利益",
-                    ItemsSource = this.SalesHistories,
-                    ValueField = "Profit",
+                    //Title = "売上",
                     FillColor = accent2Color,
-                    StrokeColor = OxyColors.White,
+                    StrokeColor = accent2Color,
                     StrokeThickness = 1
                 };
+
+                // 利益の縦棒グラフシリーズ
+                var profitSeries = new OxyPlot.Series.RectangleBarSeries()
+                {
+                    //Title = "利益",
+                    FillColor = accentColor,
+                    StrokeColor = accentColor,
+                    StrokeThickness = 1
+                };
+
+                // データポイントを追加
+                double barWidth = 0.35;
+                for (int i = 0; i < this.SalesHistories.Count; i++)
+                {
+                    var history = this.SalesHistories[i];
+
+                    // 売上の棒
+                    salesSeries.Items.Add(new OxyPlot.Series.RectangleBarItem(
+                        i - barWidth / 2, 0, i + barWidth / 2, Convert.ToDouble(history.Sales)));
+
+                    // 利益の棒（右側に配置）
+                    profitSeries.Items.Add(new OxyPlot.Series.RectangleBarItem(
+                        i + barWidth / 2, 0, i + barWidth / 2 + barWidth, Convert.ToDouble(history.Profit)));
+                }
+
+                newPlotModel.Series.Add(salesSeries);
                 newPlotModel.Series.Add(profitSeries);
 
                 // 凡例を表示
-                newPlotModel.LegendPosition = OxyPlot.LegendPosition.TopRight;
+                newPlotModel.IsLegendVisible = true;
 
                 // プロパティに代入
                 PlotModel = newPlotModel;
@@ -196,20 +214,34 @@ namespace CustomerMaintenance.ViewModels
             {
                 var sql = @"
                     SELECT
-                        C.連番 
+                        C.連番
                         , ISNULL(C.名称, '') AS 名称
-                        , ISNULL(C.郵便番号, '') AS 郵便番号                         
+                        , ISNULL(C.郵便番号, '') AS 郵便番号
                         , ISNULL(C.住所1, '') AS 住所1
-                        , ISNULL(C.住所2, '') AS 住所2                        
+                        , ISNULL(C.住所2, '') AS 住所2
                         , ISNULL(C.TEL, '') AS Tel
                         , ISNULL(C.削除区分, '') AS 削除区分
+                        --, 0 AS PrimaryChargeEmployeeCode
+                        --, 0 AS PrimaryChargeSectionCode
+                        --, ISNULL(M1.氏名, '') AS PrimaryChargeEmployeeName
                     FROM
                         D顧客 AS C 
-                        INNER JOIN D顧客担当 AS CS 
-                            ON C.連番 = CS.顧客連番 
-                            AND CS.社員コード = {0} 
+                        LEFT JOIN D顧客担当 AS CS1 
+                            ON C.連番 = CS1.顧客連番 
+                            AND CS1.社員コード = {0}
+                            AND CS1.担当区分 = 1 
+                        LEFT JOIN M社員 M1 
+                            ON CS1.社員コード = M1.コード 
+                        LEFT JOIN D顧客担当 AS CS2 
+                            ON C.連番 = CS2.顧客連番 
+                            AND CS2.社員コード = {0}
+                            AND CS2.担当区分 = 2 
+                        LEFT JOIN M社員 M2 
+                            ON CS2.社員コード = M2.コード 
                     WHERE
-                        削除区分 = 0
+                        C.削除区分 = 0 
+                        AND (CS1.社員コード IS NOT NULL OR CS2.社員コード IS NOT NULL)
+
                         ";
                 var c = context.Database.SqlQueryRaw<Customer>(
                                     sql,
@@ -221,8 +253,8 @@ namespace CustomerMaintenance.ViewModels
                 }
                 else
                 {
-                    this.Customers = new ObservableCollection<Customer>(c.OrderByDescending(c => c.Id));
-                    ;
+                    //this.ExtendedCustomerInfos = new ObservableCollection<ExtendedCustomerInfo>();
+                    this.Customers = new ObservableCollection<Customer>(c.OrderByDescending(c => c.Id)); ;
                 }
             }
         }
@@ -308,7 +340,7 @@ namespace CustomerMaintenance.ViewModels
                             GROUP BY
                                 西暦 
                             HAVING
-                                西暦 BETWEEN YEAR(GETDATE()) - 10 AND YEAR(GETDATE())
+                                西暦 BETWEEN YEAR(GETDATE()) - 10 AND YEAR(GETDATE()) - 1
                         ) AS CAL 
                         LEFT JOIN ( 
                             SELECT
