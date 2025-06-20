@@ -29,6 +29,9 @@ namespace CustomerMaintenance.Models
         [Column("TEL")]
         public string Tel { get; set; }
 
+        [Column("顧客ランク")]
+        public byte Rank { get; set; }
+
         [Column("削除区分")]
         public byte State { get; set; }
     }

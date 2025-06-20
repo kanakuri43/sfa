@@ -14,5 +14,6 @@ namespace CustomerMaintenance.Models
         public int PrimaryChargeSectionCode { get; set; }
 
         public string PrimaryChargeEmployeeName { get; set; }
+        public string SecondaryChargeEmployeeName { get; set; }
     }
 }

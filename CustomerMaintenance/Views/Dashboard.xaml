@@ -76,12 +76,13 @@
             </Grid.RowDefinitions>
             <ListView Grid.Row="0" 
                       Margin="0,4,0,0"
-                      ItemsSource="{Binding Customers}" 
+                      ItemsSource="{Binding ExtendedCustomerInfos}" 
                       SelectedItem="{Binding SelectedCustomer, Mode=TwoWay}">
                 <ListView.View>
                     <GridView>
                         <GridViewColumn Header="顧客" DisplayMemberBinding="{Binding Name}" Width="300"/>
-                        <GridViewColumn Header="住所" DisplayMemberBinding="{Binding Address1}" Width="150"/>
+                        <GridViewColumn Header="主" DisplayMemberBinding="{Binding PrimaryChargeEmployeeName}" Width="80"/>
+                        <GridViewColumn Header="副" DisplayMemberBinding="{Binding SecondaryChargeEmployeeName}" Width="80"/>
                         <GridViewColumn Header="TEL" DisplayMemberBinding="{Binding Tel}" Width="120"/>
                     </GridView>
                 </ListView.View>

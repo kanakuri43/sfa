@@ -220,30 +220,30 @@ namespace CustomerMaintenance.ViewModels
                         , ISNULL(C.住所1, '') AS 住所1
                         , ISNULL(C.住所2, '') AS 住所2
                         , ISNULL(C.TEL, '') AS Tel
+                        , ISNULL(C.顧客ランク, '') AS 顧客ランク
                         , ISNULL(C.削除区分, '') AS 削除区分
-                        --, 0 AS PrimaryChargeEmployeeCode
-                        --, 0 AS PrimaryChargeSectionCode
-                        --, ISNULL(M1.氏名, '') AS PrimaryChargeEmployeeName
+                        , 0 AS PrimaryChargeSectionCode                        
+                        , ISNULL(P.社員コード, '') AS PrimaryChargeEmployeeCode
+                        , ISNULL(MP.氏名, '') AS PrimaryChargeEmployeeName
+                        , ISNULL(S.社員コード, '') AS SecondaryChargeEmployeeCode
+                        , ISNULL(MS.氏名, '') AS SecondaryChargeEmployeeName 
                     FROM
                         D顧客 AS C 
-                        LEFT JOIN D顧客担当 AS CS1 
-                            ON C.連番 = CS1.顧客連番 
-                            AND CS1.社員コード = {0}
-                            AND CS1.担当区分 = 1 
-                        LEFT JOIN M社員 M1 
-                            ON CS1.社員コード = M1.コード 
-                        LEFT JOIN D顧客担当 AS CS2 
-                            ON C.連番 = CS2.顧客連番 
-                            AND CS2.社員コード = {0}
-                            AND CS2.担当区分 = 2 
-                        LEFT JOIN M社員 M2 
-                            ON CS2.社員コード = M2.コード 
+                        LEFT JOIN D顧客担当 AS P 
+                            ON C.連番 = P.顧客連番 
+                            AND P.担当区分 = 1 
+                        LEFT JOIN M社員 AS MP 
+                            ON P.社員コード = MP.コード 
+                        LEFT JOIN D顧客担当 AS S 
+                            ON C.連番 = S.顧客連番 
+                            AND S.担当区分 = 2 
+                        LEFT JOIN M社員 AS MS 
+                            ON S.社員コード = MS.コード 
                     WHERE
-                        C.削除区分 = 0 
-                        AND (CS1.社員コード IS NOT NULL OR CS2.社員コード IS NOT NULL)
-
+                        P.社員コード = {0} 
+                        OR S.社員コード = {0}
                         ";
-                var c = context.Database.SqlQueryRaw<Customer>(
+                var c = context.Database.SqlQueryRaw<ExtendedCustomerInfo>(
                                     sql,
                                     this.SelectedEmployee.Code
                                 ).ToList();
@@ -253,8 +253,8 @@ namespace CustomerMaintenance.ViewModels
                 }
                 else
                 {
-                    //this.ExtendedCustomerInfos = new ObservableCollection<ExtendedCustomerInfo>();
-                    this.Customers = new ObservableCollection<Customer>(c.OrderByDescending(c => c.Id)); ;
+                    this.ExtendedCustomerInfos = new ObservableCollection<ExtendedCustomerInfo>(c.OrderByDescending(c => c.Id));
+                    //this.Customers = new ObservableCollection<Customer>(c.OrderByDescending(c => c.Id)); 
                 }
             }
         }
