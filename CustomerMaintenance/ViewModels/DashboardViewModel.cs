@@ -7,6 +7,7 @@ using Prism.Regions;
 using sfa.Models;
 using Split.Models;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -22,7 +23,7 @@ namespace CustomerMaintenance.ViewModels
         private ObservableCollection<Customer> _customers;
         private ObservableCollection<ExtendedCustomerInfo> _extendedCustomerInfos;
         private Section _selectedSection;
-        private Employee _selectedEmployee;
+        private ObservableCollection<Employee> _selectedEmployees; // 複数選択用
         private Customer _selectedCustomer;
         private ObservableCollection<Section> _sections;
         private ObservableCollection<Employee> _employees;
@@ -37,11 +38,13 @@ namespace CustomerMaintenance.ViewModels
             set { SetProperty(ref _selectedSection, value); }
         }
 
-        public Employee SelectedEmployee
+        // 複数選択された社員のコレクション
+        public ObservableCollection<Employee> SelectedEmployees
         {
-            get { return _selectedEmployee; }
-            set { SetProperty(ref _selectedEmployee, value); }
+            get { return _selectedEmployees; }
+            set { SetProperty(ref _selectedEmployees, value); }
         }
+
         public Customer SelectedCustomer
         {
             get { return _selectedCustomer; }
@@ -93,18 +96,20 @@ namespace CustomerMaintenance.ViewModels
         }
         public DelegateCommand SectionSelectionChanged { get; }
         public DelegateCommand RankSelectionChanged { get; }
-        public DelegateCommand EmployeeSelectionChanged { get; }
+        public DelegateCommand<IList> EmployeeSelectionChanged { get; } // 複数選択対応
         public DelegateCommand CustomerSelectionChanged { get; }
 
         public DashboardViewModel(IRegionManager regionManager)
         {
             _regionManager = regionManager;
 
+            // 複数選択された社員のコレクションを初期化
+            SelectedEmployees = new ObservableCollection<Employee>();
+
             SectionSelectionChanged = new DelegateCommand(SectionSelectionChangedExecute);
             RankSelectionChanged = new DelegateCommand(RankSelectionChangedExecute);
-            EmployeeSelectionChanged = new DelegateCommand(EmployeeSelectionChangedExecute);
+            EmployeeSelectionChanged = new DelegateCommand<IList>(EmployeeSelectionChangedExecute); // 複数選択対応
             CustomerSelectionChanged = new DelegateCommand(CustomerSelectionChangedExecute);
-
 
             using (var context = new AppDbContext())
             {
@@ -116,14 +121,11 @@ namespace CustomerMaintenance.ViewModels
                 Ranks = new ObservableCollection<Rank>(
                     context.Ranks.Where(r => r.State == 0).ToList()
                 );
-
-
             }
 
             FetchEmployeeList();
             PlotChart();
         }
-
 
         private void PlotChart()
         {
@@ -215,16 +217,21 @@ namespace CustomerMaintenance.ViewModels
                 PlotModel = new OxyPlot.PlotModel { Title = "エラーが発生しました" };
             }
         }
+
         private void FetchCustomerList()
         {
-            // 社員未選択なら即return
-            if (this.SelectedEmployee == null)
+            // 社員が選択されていない場合は即return
+            if (this.SelectedEmployees == null || !this.SelectedEmployees.Any())
             {
+                this.ExtendedCustomerInfos = new ObservableCollection<ExtendedCustomerInfo>();
                 return;
             }
 
             using (var context = new AppDbContext())
             {
+                var employeeCodes = this.SelectedEmployees.Select(e => e.Code).ToList();
+
+                // IN句を使用して複数の社員コードで検索
                 var sql = @"
                     SELECT
                         C.連番
@@ -256,27 +263,39 @@ namespace CustomerMaintenance.ViewModels
                         LEFT JOIN M社員 AS MS 
                             ON S.社員コード = MS.コード 
                     WHERE
-                        P.社員コード = {0} 
-                        OR S.社員コード = {0}
+                        P.社員コード IN ({0}) 
+                        OR S.社員コード IN ({0})
                         ";
-                var c = context.Database.SqlQueryRaw<ExtendedCustomerInfo>(
-                                    sql,
-                                    this.SelectedEmployee.Code
-                                ).ToList();
+
+                // パラメータを準備
+                var parameters = new object[employeeCodes.Count * 2];
+                var placeholders = new List<string>();
+
+                for (int i = 0; i < employeeCodes.Count; i++)
+                {
+                    placeholders.Add($"{{{i}}}");
+                    parameters[i] = employeeCodes[i];
+                }
+
+                // IN句のプレースホルダーを作成
+                var inClause = string.Join(",", placeholders);
+                sql = sql.Replace("{0}", inClause);
+
+                var c = context.Database.SqlQueryRaw<ExtendedCustomerInfo>(sql, parameters.Take(employeeCodes.Count).ToArray()).ToList();
+
                 if (c == null)
                 {
-                    return;
+                    this.ExtendedCustomerInfos = new ObservableCollection<ExtendedCustomerInfo>();
                 }
                 else
                 {
                     this.ExtendedCustomerInfos = new ObservableCollection<ExtendedCustomerInfo>(c.OrderByDescending(c => c.Id));
-                    //this.Customers = new ObservableCollection<Customer>(c.OrderByDescending(c => c.Id)); 
                 }
             }
         }
+
         private void FetchEmployeeList()
         {
-
             using (var context = new AppDbContext())
             {
                 Employees = new ObservableCollection<Employee>(
@@ -286,9 +305,10 @@ namespace CustomerMaintenance.ViewModels
                 );
             }
         }
+
         private void FetchCaseList()
         {
-            if (this.SelectedCustomer == null || this.SelectedEmployee == null)
+            if (this.SelectedCustomer == null || this.SelectedEmployees == null || !this.SelectedEmployees.Any())
             {
                 this.Cases = new ObservableCollection<Case>();
                 return;
@@ -296,6 +316,8 @@ namespace CustomerMaintenance.ViewModels
 
             using (var context = new AppDbContext())
             {
+                var employeeCodes = this.SelectedEmployees.Select(e => e.Code).ToList();
+
                 var sql = @"
                     SELECT
                         C.*
@@ -310,17 +332,29 @@ namespace CustomerMaintenance.ViewModels
                             AND CC.顧客連番 = {0} 
                         INNER JOIN D物件担当 AS CS 
                             ON C.連番 = CS.物件連番 
-                            AND CS.社員コード = {1} 
                         LEFT JOIN M物件確度 
                             ON C.物件確度 = M物件確度.コード 
                     WHERE
                         C.削除区分 = 0
+                        AND CS.社員コード IN ({1})
                         ";
-                var c = context.Database.SqlQueryRaw<Case>(
-                                    sql,
-                                    this.SelectedCustomer.Id,
-                                    this.SelectedEmployee.Code
-                                ).ToList();
+
+                // パラメータを準備
+                var parameters = new List<object> { this.SelectedCustomer.Id };
+                var placeholders = new List<string>();
+
+                for (int i = 0; i < employeeCodes.Count; i++)
+                {
+                    placeholders.Add($"{{{i + 1}}}");
+                    parameters.Add(employeeCodes[i]);
+                }
+
+                // IN句のプレースホルダーを作成
+                var inClause = string.Join(",", placeholders);
+                sql = sql.Replace("{1}", inClause);
+
+                var c = context.Database.SqlQueryRaw<Case>(sql, parameters.ToArray()).ToList();
+
                 if (c == null)
                 {
                     this.Cases = new ObservableCollection<Case>();
@@ -392,18 +426,35 @@ namespace CustomerMaintenance.ViewModels
                 }
             }
         }
+
         private void SectionSelectionChangedExecute()
         {
             FetchEmployeeList();
+            // 部署が変更されたら社員選択をクリア
+            SelectedEmployees.Clear();
+            ExtendedCustomerInfos = new ObservableCollection<ExtendedCustomerInfo>();
         }
+
         private void RankSelectionChangedExecute()
         {
             FetchCustomerList();
         }
-        private void EmployeeSelectionChangedExecute()
+
+        private void EmployeeSelectionChangedExecute(IList selectedItems)
         {
+            // 選択された社員をコレクションに反映
+            SelectedEmployees.Clear();
+            if (selectedItems != null)
+            {
+                foreach (Employee employee in selectedItems)
+                {
+                    SelectedEmployees.Add(employee);
+                }
+            }
+
             FetchCustomerList();
         }
+
         private void CustomerSelectionChangedExecute()
         {
             FetchCaseList();
