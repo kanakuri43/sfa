@@ -70,7 +70,7 @@
 
             <ListBox Grid.Row="2"
                      ItemsSource="{Binding Employees}"
-                     SelectedItem="{Binding SelectedEmployee, Mode=TwoWay}">
+                     SelectionMode="Multiple">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
@@ -83,7 +83,7 @@
                     <i:EventTrigger EventName="SelectionChanged">
                         <prism:InvokeCommandAction 
                             Command="{Binding EmployeeSelectionChanged}" 
-                            TriggerParameterPath="AddedItems"/>
+                            CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ListBox}, Path=SelectedItems}"/>
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
             </ListBox>

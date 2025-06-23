@@ -9,6 +9,7 @@ using System.Windows.Data;
 using Finally.Models;
 using Microsoft.EntityFrameworkCore;
 using sfa.Models;
+using System.Collections;
 
 namespace Finally.ViewModels
 {
@@ -32,11 +33,13 @@ namespace Finally.ViewModels
         private ObservableCollection<Calendar> _calendars;
 
         private Section _selectedSection;
-        private Employee _selectedEmployee;
+        private ObservableCollection<Employee> _selectedEmployees;
         private int _selectedProgressLevel;
         private ProgressLevel _progressLevelMin;
         private ProgressLevel _progressLevelMax;
 
+        // コンボボックス用の選択された部門コード
+        private string _selectedSectionCode;
 
         public ObservableCollection<int> Months
         {
@@ -75,11 +78,18 @@ namespace Finally.ViewModels
             set { SetProperty(ref _selectedSection, value); }
         }
 
-        public Employee SelectedEmployee
+        public string SelectedSectionCode
         {
-            get { return _selectedEmployee; }
-            set { SetProperty(ref _selectedEmployee, value); }
+            get { return _selectedSectionCode; }
+            set { SetProperty(ref _selectedSectionCode, value); }
         }
+
+        public ObservableCollection<Employee> SelectedEmployees
+        {
+            get { return _selectedEmployees; }
+            set { SetProperty(ref _selectedEmployees, value); }
+        }
+
         public ObservableCollection<Section> Sections
         {
             get { return _sections; }
@@ -134,9 +144,10 @@ namespace Finally.ViewModels
         public DelegateCommand YearSelectionChanged { get; }
         public DelegateCommand MonthSelectionChanged { get; }
         public DelegateCommand SectionSelectionChanged { get; }
-        public DelegateCommand EmployeeSelectionChanged { get; }
+        public DelegateCommand<IList> EmployeeSelectionChanged { get; }
         public DelegateCommand SelectedProgressLevelChanged { get; }
         public DelegateCommand MonthlyTotalSelectionChanged { get; }
+        public DelegateCommand OrderDoubleClickCommand { get; }
 
         public DashboardViewModel(IRegionManager regionManager)
         {
@@ -144,9 +155,13 @@ namespace Finally.ViewModels
             YearSelectionChanged = new DelegateCommand(YearSelectionChangedExecute);
             MonthSelectionChanged = new DelegateCommand(MonthSelectionChangedExecute);
             SectionSelectionChanged = new DelegateCommand(SectionSelectionChangedExecute);
-            EmployeeSelectionChanged = new DelegateCommand(EmployeeSelectionChangedExecute);
+            EmployeeSelectionChanged = new DelegateCommand<IList>(EmployeeSelectionChangedExecute);
             SelectedProgressLevelChanged = new DelegateCommand(SelectedProgressLevelChangedExecute);
             MonthlyTotalSelectionChanged = new DelegateCommand(MonthlyTotalSelectionChangedExecute);
+            OrderDoubleClickCommand = new DelegateCommand(OrderDoubleClickCommandExecute);
+
+            // 選択された社員リストを初期化
+            SelectedEmployees = new ObservableCollection<Employee>();
 
             // 年リスト
             int currentYear = DateTime.Now.Year;
@@ -157,7 +172,6 @@ namespace Finally.ViewModels
             Months = new ObservableCollection<int>(Enumerable.Range(1, 12));
             this.SelectedMonth = DateTime.Now.Month;
 
-
             using (var context = new AppDbContext())
             {
                 // 今日の期を求める
@@ -165,7 +179,7 @@ namespace Finally.ViewModels
                 var c1 = context.Calendars.FirstOrDefault(c => c.Date == todayDate);
                 if (c1 != null)
                 {
-                    this.Period = c1.Period; 
+                    this.Period = c1.Period;
                 }
                 // 期の最初の日付の年
                 var c2 = context.Calendars
@@ -178,12 +192,15 @@ namespace Finally.ViewModels
                     this.SelectedYear = date.Year;
                 }
 
-
                 // 部署リスト
                 Sections = new ObservableCollection<Section>(
                             context.Sections.Where(s => s.State == 0).ToList()
                         );
                 this.SelectedSection = context.Sections.FirstOrDefault(s => s.Code == 21130);
+                if (this.SelectedSection != null)
+                {
+                    this.SelectedSectionCode = this.SelectedSection.Code.ToString();
+                }
 
                 // 物権確度
                 this.ProgressLevels = new ObservableCollection<ProgressLevel>(
@@ -197,13 +214,10 @@ namespace Finally.ViewModels
                 ProgressLevelMax = sortedProgressLevels[0];
                 SelectedProgressLevel = 4;
                 ProgressLevelMin = sortedProgressLevels[SelectedProgressLevel];
-
             }
 
             FetchEmployeeList();
-
             UpdateScreen();
-
         }
 
         private void UpdateCases()
@@ -211,10 +225,11 @@ namespace Finally.ViewModels
             using (var context = new AppDbContext())
             {
                 // 案件リスト
-                if (this.SelectedMonthlyTotal != null)
+                if (this.SelectedMonthlyTotal != null && this.SelectedEmployees != null && this.SelectedEmployees.Count > 0)
                 {
+                    var employeeCodes = string.Join(",", this.SelectedEmployees.Select(e => e.Code));
 
-                    var sql = @"
+                    var sql = $@"
                             SELECT
                                 D物件.*
                                 , C.連番 AS CustomerCode
@@ -228,63 +243,64 @@ namespace Finally.ViewModels
                                     AND D物件担当.担当区分 = 1 
                                 LEFT JOIN M物件確度 
                                     ON M物件確度.コード = D物件.物件確度 
-							    LEFT JOIN D物件顧客 CC
-							        ON D物件.連番 = CC.物件連番
-							    LEFT JOIN D顧客 C
-							        ON CC.顧客連番 = C.連番
+                                LEFT JOIN D物件顧客 CC
+                                    ON D物件.連番 = CC.物件連番
+                                LEFT JOIN D顧客 C
+                                    ON CC.顧客連番 = C.連番
                             WHERE
-                                D物件担当.社員コード = {0} 
-                                AND D物件.受注月度 = {1} 
+                                D物件担当.社員コード IN ({employeeCodes})
+                                AND D物件.受注月度 = {this.SelectedMonthlyTotal.YearMonth}
                                 AND D物件.削除区分 = 0 
-                                AND M物件確度.物件確度区分 >= {2}
-                                AND M物件確度.物件確度区分 <= {3}
+                                AND M物件確度.物件確度区分 >= {this.ProgressLevelMin.Level}
+                                AND M物件確度.物件確度区分 <= {this.ProgressLevelMax.Level}
                             ";
-                    var c = context.Database.SqlQueryRaw<Case>(
-                                        sql,
-                                        this.SelectedEmployee.Code,
-                                        this.SelectedMonthlyTotal.YearMonth,
-                                        this.ProgressLevelMin.Level,
-                                        this.ProgressLevelMax.Level
-                                    ).ToList();
+
+                    var c = context.Database.SqlQueryRaw<Case>(sql).ToList();
                     if (c == null)
                     {
-                        return;
+                        this.Cases = new ObservableCollection<Case>();
                     }
                     else
                     {
                         this.Cases = new ObservableCollection<Case>(c.OrderByDescending(c => c.Level));
                     }
-
                 }
-
-            } 
+                else
+                {
+                    this.Cases = new ObservableCollection<Case>();
+                }
+            }
         }
+
         private void UpdateScreen()
         {
             // 社員未選択なら即return
-            if (this.SelectedEmployee == null)
+            if (this.SelectedEmployees == null || this.SelectedEmployees.Count == 0)
             {
+                this.MonthlyTotals = new ObservableCollection<MonthlyTotal>();
+                this.YearlyTotals = new ObservableCollection<MonthlyTotal>();
+                this.Cases = new ObservableCollection<Case>();
                 return;
             }
 
-
-
             using (var context = new AppDbContext())
             {
+                // 選択された社員のコードをカンマ区切りで作成
+                var employeeCodes = string.Join(",", this.SelectedEmployees.Select(e => e.Code));
 
-                var sql = @"
+                var sql = $@"
                             SELECT
                                 CAL.月度 AS YearMonth
-                                , TAR.売上目標 AS TargetSales
-                                , TAR.粗利目標 AS TargetProfit
-                                , ISNULL(S.社員コード, 0) AS EmployeeCode
+                                , ISNULL(TAR.売上目標, 0) AS TargetSales
+                                , ISNULL(TAR.粗利目標, 0) AS TargetProfit
+                                , 0 AS EmployeeCode
                                 , ISNULL(S.FinishedSales, 0) AS FinishedSales
                                 , ISNULL(S.FinishedProfit, 0) AS FinishedProfit 
                                 , ISNULL(U.UnfinishedSales, 0) AS UnfinishedSales
                                 , ISNULL(U.UnfinishedProfit, 0) AS UnfinishedProfit 
                                 , 0 AS MiscIncome 
                             FROM
-                                (select 月度 FROM Mカレンダ WHERE 期 = {4} GROUP BY 月度) CAL 
+                                (select 月度 FROM Mカレンダ WHERE 期 = {this.Period} GROUP BY 月度) CAL 
                                 LEFT JOIN ( 
                                     SELECT
                                         月度
@@ -295,8 +311,8 @@ namespace Finally.ViewModels
                                     WHERE
                                         進捗区分 = 1 
                                         AND 社員コード <> 0 
-                                        and (社員コード = {0} OR (0 = {0})) 
-                                        and 部門コード between {1} and {1} 
+                                        AND 社員コード IN ({employeeCodes})
+                                        AND 部門コード = {this.SelectedSection.Code}
                                     GROUP BY
                                         月度
                                 ) AS TAR 
@@ -304,7 +320,6 @@ namespace Finally.ViewModels
                                 LEFT JOIN ( 
                                     SELECT
                                         D物件.受注月度
-                                        , D物件担当.社員コード
                                         , ISNULL(SUM(D物件.売上金額), 0) AS FinishedSales
                                         , ISNULL(SUM(D物件.粗利金額), 0) AS FinishedProfit 
                                     FROM
@@ -315,18 +330,16 @@ namespace Finally.ViewModels
                                         LEFT JOIN M物件確度 
                                             ON M物件確度.コード = D物件.物件確度 
                                     WHERE
-                                        D物件担当.社員コード = {0} 
+                                        D物件担当.社員コード IN ({employeeCodes})
                                         AND D物件.削除区分 = 0 
                                         AND M物件確度.物件確度区分 BETWEEN 30 AND 100 
                                     GROUP BY
-                                        D物件担当.社員コード
-                                        , D物件.受注月度
+                                        D物件.受注月度
                                 ) AS S 
                                     ON CAL.月度 = S.受注月度
                                 LEFT JOIN ( 
                                     SELECT
                                         D物件.受注月度
-                                        , D物件担当.社員コード
                                         , ISNULL(SUM(D物件.売上金額), 0) AS UnfinishedSales
                                         , ISNULL(SUM(D物件.粗利金額), 0) AS UnfinishedProfit 
                                     FROM
@@ -337,28 +350,22 @@ namespace Finally.ViewModels
                                         LEFT JOIN M物件確度 
                                             ON M物件確度.コード = D物件.物件確度 
                                     WHERE
-                                        D物件担当.社員コード = {0}
+                                        D物件担当.社員コード IN ({employeeCodes})
                                         AND D物件.削除区分 = 0 
-                                        AND M物件確度.物件確度区分 >= {2}
-                                        AND M物件確度.物件確度区分 <= {3}
+                                        AND M物件確度.物件確度区分 >= {this.ProgressLevelMin.Level}
+                                        AND M物件確度.物件確度区分 <= {this.ProgressLevelMax.Level}
                                     GROUP BY
-                                        D物件担当.社員コード
-                                        , D物件.受注月度
+                                        D物件.受注月度
                                 ) U 
                                     ON CAL.月度 = U.受注月度
-
+                            ORDER BY CAL.月度
                         ";
-                var lt = context.Database.SqlQueryRaw<MonthlyTotal>(
-                                    sql,
-                                    this.SelectedEmployee.Code,
-                                    this.SelectedSection.Code,
-                                    this.ProgressLevelMin.Level,
-                                    this.ProgressLevelMax.Level,
-                                    this.Period
-                                ).ToList();
+
+                var lt = context.Database.SqlQueryRaw<MonthlyTotal>(sql).ToList();
                 if (lt == null)
                 {
-                    return;
+                    this.MonthlyTotals = new ObservableCollection<MonthlyTotal>();
+                    this.YearlyTotals = new ObservableCollection<MonthlyTotal>();
                 }
                 else
                 {
@@ -366,28 +373,23 @@ namespace Finally.ViewModels
                     var yt = new MonthlyTotal
                     {
                         YearMonth = this.SelectedYear,
-                        EmployeeCode = this.SelectedEmployee.Code,
+                        EmployeeCode = 0, // 複数選択時は0に設定
                         TargetSales = MonthlyTotals.Sum(s => s.TargetSales),
                         TargetProfit = MonthlyTotals.Sum(s => s.TargetProfit),
                         FinishedSales = MonthlyTotals.Sum(s => s.FinishedSales),
                         FinishedProfit = MonthlyTotals.Sum(s => s.FinishedProfit),
                         UnfinishedSales = MonthlyTotals.Sum(s => s.UnfinishedSales),
                         UnfinishedProfit = MonthlyTotals.Sum(s => s.UnfinishedProfit)
-
                     };
                     this.YearlyTotals = new ObservableCollection<MonthlyTotal> { yt };
                 }
 
                 this.Cases = new ObservableCollection<Case>();
-
-
             }
-
         }
 
         private void FetchEmployeeList()
         {
-
             using (var context = new AppDbContext())
             {
                 Employees = new ObservableCollection<Employee>(
@@ -396,28 +398,46 @@ namespace Finally.ViewModels
                         .ToList()
                 );
             }
+
+            // 社員選択をクリア
+            SelectedEmployees.Clear();
         }
 
         private void YearSelectionChangedExecute()
         {
             UpdateScreen();
         }
+
         private void MonthSelectionChangedExecute()
         {
             UpdateScreen();
         }
+
         private void SectionSelectionChangedExecute()
         {
             FetchEmployeeList();
-        }
-        private void EmployeeSelectionChangedExecute()
-        {
             UpdateScreen();
         }
+
+        private void EmployeeSelectionChangedExecute(IList selectedItems)
+        {
+            // 選択された社員リストを更新
+            SelectedEmployees.Clear();
+            if (selectedItems != null)
+            {
+                foreach (Employee employee in selectedItems)
+                {
+                    SelectedEmployees.Add(employee);
+                }
+            }
+            UpdateScreen();
+        }
+
         private void MonthlyTotalSelectionChangedExecute()
         {
             UpdateCases();
         }
+
         private void SelectedProgressLevelChangedExecute()
         {
             var sortedProgressLevels = ProgressLevels
@@ -437,6 +457,11 @@ namespace Finally.ViewModels
             UpdateScreen();
         }
 
+        private void OrderDoubleClickCommandExecute()
+        {
+            // ダブルクリック時の処理を実装
+        }
+
         public bool IsNavigationTarget(NavigationContext navigationContext)
         {
             return true;
@@ -444,12 +469,10 @@ namespace Finally.ViewModels
 
         public void OnNavigatedFrom(NavigationContext navigationContext)
         {
-            throw new NotImplementedException();
         }
 
         public void OnNavigatedTo(NavigationContext navigationContext)
         {
-
         }
     }
 }
