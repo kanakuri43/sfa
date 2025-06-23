@@ -9,7 +9,7 @@ namespace CustomerMaintenance.Models
 {    
     public class ExtendedCustomerInfo : Customer
     {
-        public Int32 PrimaryChargeEmployeeCode { get; set; }
+        public int PrimaryChargeEmployeeCode { get; set; }
 
         public int PrimaryChargeSectionCode { get; set; }
 

@@ -27,6 +27,7 @@ namespace CustomerMaintenance.ViewModels
         private ObservableCollection<Section> _sections;
         private ObservableCollection<Employee> _employees;
         private ObservableCollection<Case> _cases;
+        private ObservableCollection<Rank> _rankss;
         private ObservableCollection<SalesHistory> _salesHistories;
         private OxyPlot.PlotModel _plotModel;
 
@@ -72,6 +73,11 @@ namespace CustomerMaintenance.ViewModels
             get { return _cases; }
             set { SetProperty(ref _cases, value); }
         }
+        public ObservableCollection<Rank> Ranks
+        {
+            get { return _rankss; }
+            set { SetProperty(ref _rankss, value); }
+        }
         public ObservableCollection<SalesHistory> SalesHistories
         {
             get { return _salesHistories; }
@@ -86,6 +92,7 @@ namespace CustomerMaintenance.ViewModels
             }
         }
         public DelegateCommand SectionSelectionChanged { get; }
+        public DelegateCommand RankSelectionChanged { get; }
         public DelegateCommand EmployeeSelectionChanged { get; }
         public DelegateCommand CustomerSelectionChanged { get; }
 
@@ -94,6 +101,7 @@ namespace CustomerMaintenance.ViewModels
             _regionManager = regionManager;
 
             SectionSelectionChanged = new DelegateCommand(SectionSelectionChangedExecute);
+            RankSelectionChanged = new DelegateCommand(RankSelectionChangedExecute);
             EmployeeSelectionChanged = new DelegateCommand(EmployeeSelectionChangedExecute);
             CustomerSelectionChanged = new DelegateCommand(CustomerSelectionChangedExecute);
 
@@ -104,6 +112,11 @@ namespace CustomerMaintenance.ViewModels
                     context.Sections.Where(s => s.State == 0).ToList()
                 );
                 this.SelectedSection = context.Sections.FirstOrDefault(s => s.Code == 11010);
+
+                Ranks = new ObservableCollection<Rank>(
+                    context.Ranks.Where(r => r.State == 0).ToList()
+                );
+
 
             }
 
@@ -156,7 +169,7 @@ namespace CustomerMaintenance.ViewModels
                 // 売上の縦棒グラフシリーズ
                 var salesSeries = new OxyPlot.Series.RectangleBarSeries()
                 {
-                    //Title = "売上",
+                    Title = "売上",
                     FillColor = accent2Color,
                     StrokeColor = accent2Color,
                     StrokeThickness = 1
@@ -165,7 +178,7 @@ namespace CustomerMaintenance.ViewModels
                 // 利益の縦棒グラフシリーズ
                 var profitSeries = new OxyPlot.Series.RectangleBarSeries()
                 {
-                    //Title = "利益",
+                    Title = "利益",
                     FillColor = accentColor,
                     StrokeColor = accentColor,
                     StrokeThickness = 1
@@ -220,7 +233,10 @@ namespace CustomerMaintenance.ViewModels
                         , ISNULL(C.住所1, '') AS 住所1
                         , ISNULL(C.住所2, '') AS 住所2
                         , ISNULL(C.TEL, '') AS Tel
+                        , ISNULL(C.FAX, '') AS Fax
                         , ISNULL(C.顧客ランク, '') AS 顧客ランク
+                        , ISNULL(C.顧客地区, '') AS 地区
+                        , ISNULL(C.顧客業種, '') AS 業種
                         , ISNULL(C.削除区分, '') AS 削除区分
                         , 0 AS PrimaryChargeSectionCode                        
                         , ISNULL(P.社員コード, '') AS PrimaryChargeEmployeeCode
@@ -379,6 +395,10 @@ namespace CustomerMaintenance.ViewModels
         private void SectionSelectionChangedExecute()
         {
             FetchEmployeeList();
+        }
+        private void RankSelectionChangedExecute()
+        {
+            FetchCustomerList();
         }
         private void EmployeeSelectionChangedExecute()
         {
