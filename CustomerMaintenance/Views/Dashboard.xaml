@@ -65,26 +65,9 @@
                         Orientation="Horizontal">
                 <Button Content="All"
                         Width="100"/>
-                <Button Content="Cleat"
+                <Button Content="Clear"
                         Width="100"/>
             </StackPanel>
-
-            <ComboBox Grid.Row="4" 
-                      Margin="0,10,0,4"
-                      VerticalAlignment="Center"
-                      ItemsSource="{Binding Ranks}"
-                      DisplayMemberPath="Symbol"
-                      SelectedItem="{Binding SelectedRank, Mode=TwoWay}">
-                <i:Interaction.Triggers>
-                    <i:EventTrigger EventName="SelectionChanged">
-                        <prism:InvokeCommandAction Command="{Binding RankSelectionChanged}" />
-                    </i:EventTrigger>
-                </i:Interaction.Triggers>
-            </ComboBox>
-
-            <Controls:ToggleSwitch  Grid.Row="5"
-                                    OffContent="All"
-                                    OnContent="In Progress Only"/>
 
         </Grid>
 

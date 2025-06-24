@@ -5,7 +5,6 @@ using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Regions;
 using sfa.Models;
-using Split.Models;
 using System;
 using System.Collections;
 using System.Collections.Generic;

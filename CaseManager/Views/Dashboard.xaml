@@ -20,15 +20,44 @@
         <Grid Grid.Column="0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="30"/>
+                <RowDefinition Height="30"/>
                 <RowDefinition Height="40"/>
                 <RowDefinition />
                 <RowDefinition Height="40"/>
                 <RowDefinition Height="40"/>
-                <RowDefinition Height="30"/>
             </Grid.RowDefinitions>
-            <TextBox Grid.Row="0" 
+            <StackPanel Grid.Row="0"
+                            Margin="0,0,0,0"
+                            Orientation="Horizontal">
+                <ComboBox Width="90"                          
+                          ItemsSource="{Binding Years}"
+                          SelectedValue="{Binding SelectedYear}"
+                          SelectedItem="{Binding SelectedYear, Mode=TwoWay}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="SelectionChanged">
+                            <prism:InvokeCommandAction 
+                            Command="{Binding YearSelectionChanged}" 
+                            TriggerParameterPath="AddedItems"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </ComboBox>
+                <ComboBox Width="50"
+                          ItemsSource="{Binding Months}"
+                          SelectedValue="{Binding SelectedMonth}"
+                          SelectedItem="{Binding SelectedMonth, Mode=TwoWay}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="SelectionChanged">
+                            <prism:InvokeCommandAction 
+                            Command="{Binding MonthSelectionChanged}" 
+                            TriggerParameterPath="AddedItems"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </ComboBox>
+            </StackPanel>
+
+            <TextBox Grid.Row="1" 
                      Controls:TextBoxHelper.Watermark="名称検索"/>
-            <ComboBox Grid.Row="1"
+            <ComboBox Grid.Row="2"
                       Margin="0,10,0,4"
                       ItemsSource="{Binding Sections}"
                       DisplayMemberPath="Name"
@@ -42,7 +71,7 @@
                 </i:Interaction.Triggers>
             </ComboBox>
 
-            <ListBox Grid.Row="2"
+            <ListBox Grid.Row="3"
                      ItemsSource="{Binding Employees}"
                      SelectionMode="Multiple">
                 <ListBox.ItemTemplate>
@@ -61,7 +90,7 @@
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
             </ListBox>
-            <StackPanel Grid.Row="3"
+            <StackPanel Grid.Row="4"
                         Orientation="Horizontal">
                 <Button Content="All"
                         Width="100"/>
@@ -69,7 +98,7 @@
                         Width="100"/>
             </StackPanel>
 
-            <ComboBox Grid.Row="4" 
+            <ComboBox Grid.Row="5" 
                       Margin="0,10,0,4"
                       VerticalAlignment="Center"
                       ItemsSource="{Binding Ranks}"
@@ -82,9 +111,6 @@
                 </i:Interaction.Triggers>
             </ComboBox>
 
-            <Controls:ToggleSwitch  Grid.Row="5"
-                                    OffContent="All"
-                                    OnContent="In Progress Only"/>
 
         </Grid>
 

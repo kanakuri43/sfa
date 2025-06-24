@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using Microsoft.EntityFrameworkCore;
 using sfa.Models;
-using Split.Models;
 
 namespace CustomerMaintenance.Models
 {
