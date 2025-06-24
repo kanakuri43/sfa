@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CustomerMaintenance.Models
 {    
-    public class ExtendedCustomerInfo : Customer
+    public class ExtendedCustomerInfo : sfa.Models.Customer
     {
         public int PrimaryChargeEmployeeCode { get; set; }
 

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Split.Models
+namespace sfa.Models
 {
     [Table("M物件確度")]
 

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CustomerMaintenance.Models
+namespace sfa.Models
 {
     [Table("D顧客")]
 
