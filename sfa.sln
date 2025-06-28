@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomerMaintenance", "Cust
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CaseManager", "CaseManager\CaseManager.csproj", "{392A775E-C32F-44F8-919D-6C6DC300B26D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tracer", "Tracer\Tracer.csproj", "{0DFC6561-5E57-409A-8F91-6A3694260EDE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{392A775E-C32F-44F8-919D-6C6DC300B26D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{392A775E-C32F-44F8-919D-6C6DC300B26D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{392A775E-C32F-44F8-919D-6C6DC300B26D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0DFC6561-5E57-409A-8F91-6A3694260EDE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0DFC6561-5E57-409A-8F91-6A3694260EDE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0DFC6561-5E57-409A-8F91-6A3694260EDE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0DFC6561-5E57-409A-8F91-6A3694260EDE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
