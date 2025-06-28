@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Tracer.Models
 {
-    [Table("CaseRevisions")]
+    [Table("case_revisions")]
     public class CaseRevision
     {
         public int Id { get; set; }
@@ -21,7 +21,7 @@ namespace Tracer.Models
         public int ProgressLevel { get; set; }
         [Column("sale")]
         public decimal SalesPrice { get; set; }
-        [Column("profi")]
+        [Column("profit")]
         public decimal Profit { get; set; }
 
 

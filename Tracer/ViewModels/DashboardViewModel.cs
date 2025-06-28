@@ -143,12 +143,17 @@ namespace Tracer.ViewModels
 
         private void FetchCaseRevisions()
         {
+            if (this.SelectedCase == null)
+            {
+                return;
+            }
 
             using (var context = new AppDbContext())
             {
                 CaseRevisions = new ObservableCollection<CaseRevision>(
                     context.CaseRevisions
                         .Where(c => c.CaseId == this.SelectedCase.Id)
+                        //.Where(c => c.CaseId == 44924)
                         .ToList()
                 );
             }
