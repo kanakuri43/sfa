@@ -1,9 +1,12 @@
 ﻿using Prism.Mvvm;
+using Prism.Regions;
+using Tracer.Views;
 
 namespace Tracer.ViewModels
 {
     public class MainWindowViewModel : BindableBase
     {
+        private readonly IRegionManager _regionManager;
         private string _title = "Tracer";
         public string Title
         {
@@ -11,8 +14,10 @@ namespace Tracer.ViewModels
             set { SetProperty(ref _title, value); }
         }
 
-        public MainWindowViewModel()
+        public MainWindowViewModel(IRegionManager regionManager)
         {
+            _regionManager = regionManager;
+            _regionManager.RegisterViewWithRegion("ContentRegion", typeof(Dashboard));
 
         }
     }

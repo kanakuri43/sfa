@@ -497,7 +497,6 @@ namespace Split.ViewModels
             }
         }
 
-
         private void YearSelectionChangedExecute()
         {
             UpdateScreen();

@@ -5,6 +5,17 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="..\sfa\Models\Case.cs" Link="Models\Case.cs" />
+    <Compile Include="..\sfa\Models\Employee.cs" Link="Models\Employee.cs" />
+    <Compile Include="..\sfa\Models\ProgressLevel.cs" Link="Models\ProgressLevel.cs" />
+    <Compile Include="..\sfa\Models\Section.cs" Link="Models\Section.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\sfa\config.xml" Link="config.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="MahApps.Metro" Version="2.4.10" />
     <PackageReference Include="MahApps.Metro.IconPacks" Version="5.1.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.6" />
