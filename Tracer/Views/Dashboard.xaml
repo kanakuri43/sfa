@@ -57,6 +57,39 @@
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
             </ListBox>
+            <Grid Grid.Row="2"
+                  VerticalAlignment="Top"
+>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="40"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="40"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0"
+                                       Text="{Binding ProgressLevelMax.Symbol}" 
+                                       VerticalAlignment="Center"/>
+                <Slider Grid.Column="1" 
+                        Margin="4"
+                        TickFrequency="1"
+                        IsSnapToTickEnabled="True"
+                        Value="{Binding SelectedProgressLevel}"
+                        Minimum="0"
+                        Maximum="6">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="ValueChanged">
+                            <prism:InvokeCommandAction 
+                                            Command="{Binding SelectedProgressLevelChanged}" />
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+
+                </Slider>
+
+                <TextBlock Grid.Column="2"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Right"
+                           Text="{Binding ProgressLevelMin.Symbol}"/>
+
+            </Grid>
 
         </Grid>
         <ListView Grid.Column="1" 
@@ -68,6 +101,37 @@
                     <GridViewColumn Header="確度" DisplayMemberBinding="{Binding Symbol}" Width="35"/>
                     <GridViewColumn Header="顧客" DisplayMemberBinding="{Binding CustomerName}" Width="170"/>
                     <GridViewColumn Header="案件" DisplayMemberBinding="{Binding CaseName}" Width="170"/>
+                    <GridViewColumn Header="売上" Width="80">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding SalesPrice, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="粗利" Width="80">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding ProfitPrice, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                </GridView>
+            </ListView.View>
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="SelectionChanged">
+                    <prism:InvokeCommandAction Command="{Binding CaseSelectionChanged}" TriggerParameterPath="AddedItems"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+        </ListView>
+        <ListView Grid.Column="2" 
+                      Margin="10,0,0,0"
+                      ItemsSource="{Binding CaseRevisions}" >
+
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="日付" DisplayMemberBinding="{Binding Symbol}" Width="35"/>
+                    <GridViewColumn Header="確度" DisplayMemberBinding="{Binding Symbol}" Width="35"/>
+                    <GridViewColumn Header="受注" DisplayMemberBinding="{Binding CustomerName}" Width="170"/>
                     <GridViewColumn Header="売上" Width="80">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>

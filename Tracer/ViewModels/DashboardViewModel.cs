@@ -20,11 +20,13 @@ namespace Tracer.ViewModels
         private ObservableCollection<Employee> _employees;
         private Section _selectedSection;
         private Employee _selectedEmployee;
+        private Case _selectedCase;
         private ObservableCollection<ProgressLevel> _progressLevels;
         private int _selectedProgressLevel;
         private ProgressLevel _progressLevelMin;
         private ProgressLevel _progressLevelMax;
         private ObservableCollection<Case> _cases;
+        private ObservableCollection<CaseRevision> _caseRevisions;
 
         public ObservableCollection<Section> Sections
         {
@@ -40,6 +42,11 @@ namespace Tracer.ViewModels
         {
             get { return _selectedSection; }
             set { SetProperty(ref _selectedSection, value); }
+        }
+        public Case SelectedCase
+        {
+            get { return _selectedCase; }
+            set { SetProperty(ref _selectedCase, value); }
         }
 
         public Employee SelectedEmployee
@@ -72,10 +79,16 @@ namespace Tracer.ViewModels
             get { return _cases; }
             set { SetProperty(ref _cases, value); }
         }
+        public ObservableCollection<CaseRevision> CaseRevisions
+        {
+            get { return _caseRevisions; }
+            set { SetProperty(ref _caseRevisions, value); }
+        }
 
         public DelegateCommand SectionSelectionChanged { get; }
         public DelegateCommand EmployeeSelectionChanged { get; }
         public DelegateCommand SelectedProgressLevelChanged { get; }
+        public DelegateCommand CaseSelectionChanged { get; }
 
         public DashboardViewModel(IRegionManager regionManager)
         {
@@ -83,6 +96,7 @@ namespace Tracer.ViewModels
             SectionSelectionChanged = new DelegateCommand(SectionSelectionChangedExecute);
             EmployeeSelectionChanged = new DelegateCommand(EmployeeSelectionChangedExecute);
             SelectedProgressLevelChanged = new DelegateCommand(SelectedProgressLevelChangedExecute);
+            CaseSelectionChanged = new DelegateCommand(CaseSelectionChangedExecute);
 
             using (var context = new AppDbContext())
             {
@@ -122,6 +136,19 @@ namespace Tracer.ViewModels
                 Employees = new ObservableCollection<Employee>(
                     context.Employees
                         .Where(e => e.SectionCode == this.SelectedSection.Code && e.State == 0)
+                        .ToList()
+                );
+            }
+        }
+
+        private void FetchCaseRevisions()
+        {
+
+            using (var context = new AppDbContext())
+            {
+                CaseRevisions = new ObservableCollection<CaseRevision>(
+                    context.CaseRevisions
+                        .Where(c => c.CaseId == this.SelectedCase.Id)
                         .ToList()
                 );
             }
@@ -169,7 +196,7 @@ namespace Tracer.ViewModels
                 else
                 {
                     this.Cases = new ObservableCollection<Case>(c.OrderByDescending(c => c.Level));
-                    ;
+                
                 }
 
             }
@@ -184,6 +211,13 @@ namespace Tracer.ViewModels
         {
             UpdateScreen();
         }
+
+        private void CaseSelectionChangedExecute()
+        {
+            FetchCaseRevisions();
+        }
+
+
         private void SelectedProgressLevelChangedExecute()
         {
             var sortedProgressLevels = ProgressLevels
