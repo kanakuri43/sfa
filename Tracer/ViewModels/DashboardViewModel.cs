@@ -8,6 +8,7 @@ using System.Linq;
 using sfa.Models;
 using Microsoft.EntityFrameworkCore;
 using Tracer.Models;
+using System.Windows.Data;
 
 namespace Tracer.ViewModels
 {
@@ -23,6 +24,7 @@ namespace Tracer.ViewModels
         private int _selectedProgressLevel;
         private ProgressLevel _progressLevelMin;
         private ProgressLevel _progressLevelMax;
+        private ObservableCollection<Case> _cases;
 
         public ObservableCollection<Section> Sections
         {
@@ -64,6 +66,11 @@ namespace Tracer.ViewModels
         {
             get { return _progressLevelMax; }
             set { SetProperty(ref _progressLevelMax, value); }
+        }
+        public ObservableCollection<Case> Cases
+        {
+            get { return _cases; }
+            set { SetProperty(ref _cases, value); }
         }
 
         public DelegateCommand SectionSelectionChanged { get; }
@@ -122,6 +129,51 @@ namespace Tracer.ViewModels
 
         private void UpdateScreen()
         {
+            if (this.SelectedEmployee == null)
+            {
+                return;
+            }
+
+            using (var context = new AppDbContext())
+            {
+                // 案件リスト
+                var sql = $@"
+                        SELECT
+                            D物件.*
+                            , C.連番 AS CustomerCode
+                            , C.名称 AS CustomerName
+                            , 記号
+                            , 物件確度区分
+                        FROM
+                            D物件 
+                            INNER JOIN D物件担当 
+                                ON D物件担当.物件連番 = D物件.連番 
+                                AND D物件担当.担当区分 = 1 
+                            LEFT JOIN M物件確度 
+                                ON M物件確度.コード = D物件.物件確度 
+							LEFT JOIN D物件顧客 CC
+							    ON D物件.連番 = CC.物件連番
+							LEFT JOIN D顧客 C
+							    ON CC.顧客連番 = C.連番
+                        WHERE
+                            D物件担当.社員コード = {this.SelectedEmployee.Code} 
+                            AND D物件.削除区分 = 0 
+                            AND M物件確度.物件確度区分 >= {this.ProgressLevelMin.Level}
+                            AND M物件確度.物件確度区分 <= {this.ProgressLevelMax.Level}
+                        ";
+                var c = context.Database.SqlQueryRaw<Case>(sql).ToList();
+                if (c == null)
+                {
+                    return;
+                }
+                else
+                {
+                    this.Cases = new ObservableCollection<Case>(c.OrderByDescending(c => c.Level));
+                    ;
+                }
+
+            }
+
 
         }
         private void SectionSelectionChangedExecute()

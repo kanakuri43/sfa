@@ -59,6 +59,37 @@
             </ListBox>
 
         </Grid>
+        <ListView Grid.Column="1" 
+                      Margin="10,0,0,0"
+                      ItemsSource="{Binding Cases}" >
+
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="確度" DisplayMemberBinding="{Binding Symbol}" Width="35"/>
+                    <GridViewColumn Header="顧客" DisplayMemberBinding="{Binding CustomerName}" Width="170"/>
+                    <GridViewColumn Header="案件" DisplayMemberBinding="{Binding CaseName}" Width="170"/>
+                    <GridViewColumn Header="売上" Width="80">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding SalesPrice, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="粗利" Width="80">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding ProfitPrice, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                </GridView>
+            </ListView.View>
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="MouseDoubleClick">
+                    <prism:InvokeCommandAction Command="{Binding OrderDoubleClickCommand}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+        </ListView>
 
     </Grid>
 </UserControl>
