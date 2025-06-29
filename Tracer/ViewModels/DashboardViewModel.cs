@@ -153,7 +153,7 @@ namespace Tracer.ViewModels
                 CaseRevisions = new ObservableCollection<CaseRevision>(
                     context.CaseRevisions
                         .Where(c => c.CaseId == this.SelectedCase.Id)
-                        //.Where(c => c.CaseId == 44924)
+                        .OrderByDescending(c => c.DetectedDate)
                         .ToList()
                 );
             }
@@ -176,6 +176,7 @@ namespace Tracer.ViewModels
                             , C.名称 AS CustomerName
                             , 記号
                             , 物件確度区分
+                            , ISNULL(CR.revision_count, 0) AS revision_count
                         FROM
                             D物件 
                             INNER JOIN D物件担当 
@@ -187,6 +188,16 @@ namespace Tracer.ViewModels
 							    ON D物件.連番 = CC.物件連番
 							LEFT JOIN D顧客 C
 							    ON CC.顧客連番 = C.連番
+							LEFT JOIN (
+                                SELECT 
+                                    case_id
+                                    , count(1) AS revision_count
+                                FROM
+                                    case_revisions 
+                                GROUP BY
+                                    case_id
+                                ) AS CR
+							    ON D物件.連番 = CR.case_id
                         WHERE
                             D物件担当.社員コード = {this.SelectedEmployee.Code} 
                             AND D物件.削除区分 = 0 

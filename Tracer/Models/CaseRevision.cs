@@ -20,7 +20,7 @@ namespace Tracer.Models
         [Column("progress_level")]
         public int ProgressLevel { get; set; }
         [Column("sale")]
-        public decimal SalesPrice { get; set; }
+        public decimal Sale { get; set; }
         [Column("profit")]
         public decimal Profit { get; set; }
 
