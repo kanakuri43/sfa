@@ -12,7 +12,7 @@
     <Grid Margin="8" Background="White">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="200"/>
-            <ColumnDefinition Width="600"/>
+            <ColumnDefinition Width="640"/>
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <Grid Grid.Column="0">
@@ -123,6 +123,13 @@
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
+                    <GridViewColumn Header="ela" Width="35">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding EalpsedDays, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
                 </GridView>
             </ListView.View>
             <i:Interaction.Triggers>
@@ -139,7 +146,7 @@
                 <GridView>
                     <GridViewColumn Header="日付" DisplayMemberBinding="{Binding DetectedDate, StringFormat={}{0:yyyy/MM/dd}}" Width="80"/>
                     <GridViewColumn Header="確度" DisplayMemberBinding="{Binding ProgressLevel}" Width="35"/>
-                    <GridViewColumn Header="受注" DisplayMemberBinding="{Binding OrderYearMonth}" Width="70"/>
+                    <GridViewColumn Header="受注" DisplayMemberBinding="{Binding OrderYearMonth}" Width="60"/>
                     <GridViewColumn Header="売上" Width="80">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>

@@ -172,11 +172,12 @@ namespace Tracer.ViewModels
                 var sql = $@"
                         SELECT
                             D物件.*
-                            , C.連番 AS CustomerCode
-                            , C.名称 AS CustomerName
+                            , ISNULL(C.連番, 0) AS CustomerCode
+                            , ISNULL(C.名称, 0) AS CustomerName
                             , 記号
                             , 物件確度区分
                             , ISNULL(CR.revision_count, 0) AS RevisionCount
+                            , ISNULL(CR.elapsed_days, 0) AS EalpsedDays
                         FROM
                             D物件 
                             INNER JOIN D物件担当 
@@ -192,6 +193,7 @@ namespace Tracer.ViewModels
                                 SELECT 
                                     case_id
                                     , count(1) AS revision_count
+                                    , DATEDIFF(DAY, MAX(detected_date), GETDATE()) AS elapsed_days
                                 FROM
                                     case_revisions 
                                 GROUP BY
