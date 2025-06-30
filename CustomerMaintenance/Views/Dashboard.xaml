@@ -102,12 +102,34 @@
             </ListView>
 
             <Grid Grid.Row="1">
-
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
-                <ListView Grid.Column="0" 
+                <Border Grid.Row="0" Grid.Column="0" 
+                        BorderBrush="Silver"
+                        BorderThickness="4,0,0,0"/>
+                <TextBlock Grid.Row="0" Grid.Column="0" 
+                       Margin="10,0,0,0"
+                       VerticalAlignment="Center"
+                       FontWeight="Bold"
+                       FontSize="16"
+                       Text="案件リスト"/>
+                <Border Grid.Row="0" Grid.Column="1" 
+                        BorderBrush="Silver"
+                        BorderThickness="4,0,0,0"/>
+                <TextBlock Grid.Row="0" Grid.Column="1" 
+                       Margin="10,0,0,0"
+                       VerticalAlignment="Center"
+                       FontWeight="Bold"
+                       FontSize="16"
+                       Text="売上粗利推移"/>
+
+                <ListView Grid.Row="1" Grid.Column="0" 
                           Margin="0,10,0,0"
                           ItemsSource="{Binding Cases}">
 
@@ -138,7 +160,7 @@
                     </i:Interaction.Triggers>
                 </ListView>
 
-                <oxy:PlotView Grid.Column="1" 
+                <oxy:PlotView Grid.Row="1" Grid.Column="1" 
                               Model="{Binding PlotModel}"/>
 
             </Grid>
