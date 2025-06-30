@@ -29,10 +29,10 @@ namespace sfa.Models
         public decimal SalesPrice { get; set; }
         [Column("粗利金額")]
         public decimal ProfitPrice { get; set; }
-        [Column("記号")]
-        public string Symbol { get; set; }
-        [Column("物件確度区分")]
-        public byte Level { get; set; }
+        //[Column("記号")]
+        //public string Symbol { get; set; }
+        //[Column("物件確度区分")]
+        //public byte Level { get; set; }
 
 
     }

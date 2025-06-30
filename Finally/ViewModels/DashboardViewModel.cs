@@ -234,8 +234,8 @@ namespace Finally.ViewModels
                                 D物件.*
                                 , C.連番 AS CustomerCode
                                 , C.名称 AS CustomerName
-                                , 記号
-                                , 物件確度区分
+                                , 記号 AS Symbol
+                                , 物件確度区分 AS ProgressLevel
                                 , CONVERT(SMALLINT, 0) AS ChargeEmployeeCode
                             FROM
                                 D物件 
@@ -263,7 +263,7 @@ namespace Finally.ViewModels
                     }
                     else
                     {
-                        this.Cases = new ObservableCollection<ExtendedCaseInfo>(c.OrderByDescending(c => c.Level));
+                        this.Cases = new ObservableCollection<ExtendedCaseInfo>(c.OrderByDescending(c => c.ProgressLevel));
                     }
                 }
                 else

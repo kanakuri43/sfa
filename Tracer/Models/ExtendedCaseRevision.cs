@@ -4,15 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Split.Models
+namespace Tracer.Models
 {
-    public class ExtendedCaseInfo : sfa.Models.Case
+    public class ExtendedCaseRevision : CaseRevision
     {
-        public Int16 ChargeEmployeeCode { get; set; }
-
-        public int CustomerCode { get; set; }
-
-        public string CustomerName { get; set; }
         public string Symbol { get; set; }
         public byte ProgressLevel { get; set; }
 

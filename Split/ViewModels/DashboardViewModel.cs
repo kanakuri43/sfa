@@ -393,8 +393,8 @@ namespace Split.ViewModels
                             D物件.*
                             , C.連番 AS CustomerCode
                             , C.名称 AS CustomerName
-                            , 記号
-                            , 物件確度区分
+                            , 記号 AS Symbol
+                            , 物件確度区分 AS ProgressLevel
                             , {0} AS ChargeEmployeeCode
                         FROM
                             D物件 
@@ -427,7 +427,7 @@ namespace Split.ViewModels
                 }
                 else
                 {
-                    this.CasesByIndividual = new ObservableCollection<ExtendedCaseInfo>(c.OrderByDescending(c => c.Level));
+                    this.CasesByIndividual = new ObservableCollection<ExtendedCaseInfo>(c.OrderByDescending(c => c.ProgressLevel));
                     ;
                 }
 

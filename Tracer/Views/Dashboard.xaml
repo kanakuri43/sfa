@@ -145,7 +145,7 @@
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="日付" DisplayMemberBinding="{Binding DetectedDate, StringFormat={}{0:yyyy/MM/dd}}" Width="80"/>
-                    <GridViewColumn Header="確度" DisplayMemberBinding="{Binding ProgressLevel}" Width="35"/>
+                    <GridViewColumn Header="確度" DisplayMemberBinding="{Binding Symbol}" Width="35"/>
                     <GridViewColumn Header="受注" DisplayMemberBinding="{Binding OrderYearMonth}" Width="60"/>
                     <GridViewColumn Header="売上" Width="80">
                         <GridViewColumn.CellTemplate>

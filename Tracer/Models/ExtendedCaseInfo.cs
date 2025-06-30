@@ -14,6 +14,8 @@ namespace Tracer.Models
         public int CustomerCode { get; set; }
 
         public string CustomerName { get; set; }
+        public string Symbol { get; set; }
+        public byte ProgressLevel { get; set; }
 
     }
 }

@@ -26,7 +26,7 @@ namespace Tracer.ViewModels
         private ProgressLevel _progressLevelMin;
         private ProgressLevel _progressLevelMax;
         private ObservableCollection<ExtendedCaseInfo> _cases;
-        private ObservableCollection<CaseRevision> _caseRevisions;
+        private ObservableCollection<ExtendedCaseRevision> _caseRevisions;
 
         public ObservableCollection<Section> Sections
         {
@@ -79,7 +79,7 @@ namespace Tracer.ViewModels
             get { return _cases; }
             set { SetProperty(ref _cases, value); }
         }
-        public ObservableCollection<CaseRevision> CaseRevisions
+        public ObservableCollection<ExtendedCaseRevision> CaseRevisions
         {
             get { return _caseRevisions; }
             set { SetProperty(ref _caseRevisions, value); }
@@ -153,12 +153,8 @@ namespace Tracer.ViewModels
                 var sql = $@"
                         SELECT
                             case_revisions.*
-                            , ISNULL(C.連番, 0) AS CustomerCode
-                            , ISNULL(C.名称, 0) AS CustomerName
-                            , 記号
-                            , 物件確度区分
-                            , ISNULL(CR.revision_count, 0) AS RevisionCount
-                            , ISNULL(CR.elapsed_days, 0) AS EalpsedDays
+                            , 記号 AS Symbol
+                            , 物件確度区分 AS ProgressLevel
                         FROM
                             case_revisions 
                             LEFT JOIN M物件確度 
@@ -166,26 +162,17 @@ namespace Tracer.ViewModels
                         WHERE
                             case_revisions.case_id = {this.SelectedCase.Id} 
                         ORDER BY
-                            case_revisions.detected_date
+                            case_revisions.detected_date DESC
                         ";
-                var c = context.Database.SqlQueryRaw<CaseRevision>(sql).ToList();
+                var c = context.Database.SqlQueryRaw<ExtendedCaseRevision>(sql).ToList();
                 if (c == null)
                 {
                     return;
                 }
                 else
                 {
-                    this.CaseRevisions = new ObservableCollection<CaseRevision>();
-
+                    this.CaseRevisions = new ObservableCollection<ExtendedCaseRevision>(c);
                 }
-
-
-                //CaseRevisions = new ObservableCollection<CaseRevision>(
-                //    context.CaseRevisions
-                //        .Where(c => c.CaseId == this.SelectedCase.Id)
-                //        .OrderByDescending(c => c.DetectedDate)
-                //        .ToList()
-                //);
             }
         }
 
@@ -204,8 +191,8 @@ namespace Tracer.ViewModels
                             D物件.*
                             , ISNULL(C.連番, 0) AS CustomerCode
                             , ISNULL(C.名称, 0) AS CustomerName
-                            , 記号
-                            , 物件確度区分
+                            , 記号 AS Symbol
+                            , 物件確度区分 AS ProgressLevel
                             , ISNULL(CR.revision_count, 0) AS RevisionCount
                             , ISNULL(CR.elapsed_days, 0) AS EalpsedDays
                         FROM
@@ -243,13 +230,9 @@ namespace Tracer.ViewModels
                 }
                 else
                 {
-                    this.Cases = new ObservableCollection<ExtendedCaseInfo>(c.OrderByDescending(c => c.Level));
-                
+                    this.Cases = new ObservableCollection<ExtendedCaseInfo>(c.OrderByDescending(c => c.ProgressLevel));                
                 }
-
             }
-
-
         }
         private void SectionSelectionChangedExecute()
         {
