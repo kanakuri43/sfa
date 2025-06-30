@@ -150,12 +150,42 @@ namespace Tracer.ViewModels
 
             using (var context = new AppDbContext())
             {
-                CaseRevisions = new ObservableCollection<CaseRevision>(
-                    context.CaseRevisions
-                        .Where(c => c.CaseId == this.SelectedCase.Id)
-                        .OrderByDescending(c => c.DetectedDate)
-                        .ToList()
-                );
+                var sql = $@"
+                        SELECT
+                            case_revisions.*
+                            , ISNULL(C.連番, 0) AS CustomerCode
+                            , ISNULL(C.名称, 0) AS CustomerName
+                            , 記号
+                            , 物件確度区分
+                            , ISNULL(CR.revision_count, 0) AS RevisionCount
+                            , ISNULL(CR.elapsed_days, 0) AS EalpsedDays
+                        FROM
+                            case_revisions 
+                            LEFT JOIN M物件確度 
+                                ON case_revisions.progress_level = M物件確度.コード 
+                        WHERE
+                            case_revisions.case_id = {this.SelectedCase.Id} 
+                        ORDER BY
+                            case_revisions.detected_date
+                        ";
+                var c = context.Database.SqlQueryRaw<CaseRevision>(sql).ToList();
+                if (c == null)
+                {
+                    return;
+                }
+                else
+                {
+                    this.CaseRevisions = new ObservableCollection<CaseRevision>();
+
+                }
+
+
+                //CaseRevisions = new ObservableCollection<CaseRevision>(
+                //    context.CaseRevisions
+                //        .Where(c => c.CaseId == this.SelectedCase.Id)
+                //        .OrderByDescending(c => c.DetectedDate)
+                //        .ToList()
+                //);
             }
         }
 
