@@ -16,8 +16,8 @@ namespace sfa.Models
         public byte State { get; set; }
         [Column("名称")]
         public string CaseName { get; set; }
-        public int CustomerCode { get; set; }
-        public string CustomerName { get; set; }
+        //public int CustomerCode { get; set; }
+        //public string CustomerName { get; set; }
 
         [Column("受注月度")]
         public int OrderYearMonth { get; set; }

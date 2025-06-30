@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CaseManager.Models
+namespace Finally.Models
 {
     public class ExtendedCaseInfo : sfa.Models.Case
     {
-        public int ChargeEmployeeCode { get; set; }
+        public Int16 ChargeEmployeeCode { get; set; }
 
         public int CustomerCode { get; set; }
 

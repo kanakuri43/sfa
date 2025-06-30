@@ -116,7 +116,13 @@
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="rev" DisplayMemberBinding="{Binding revision_count}" Width="35"/>
+                    <GridViewColumn Header="rev" Width="35">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding RevisionCount, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
                 </GridView>
             </ListView.View>
             <i:Interaction.Triggers>

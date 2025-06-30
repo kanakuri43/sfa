@@ -130,12 +130,22 @@ namespace CaseManager.ViewModels
                 var sql = $@"
                     SELECT
                         D.* 
+                        , 記号
+                        , 物件確度区分
                         , D物件担当.社員コード AS ChargeEmployeeCode
+                        , D物件顧客.顧客連番 AS CustomerCode
+                        , D顧客.名称 AS CustomerName
                     FROM
                         D物件 D 
                         INNER JOIN D物件担当 
                             ON D.連番 = D物件担当.物件連番 
                             AND D物件担当.社員コード IN ({employeeCodes})
+                        INNER JOIN D物件顧客
+                            ON D.連番 = D物件顧客.物件連番 
+                        INNER JOIN D顧客
+                            ON D物件顧客.顧客連番 = D顧客.連番 
+                        LEFT JOIN M物件確度 
+                            ON M物件確度.コード = D.物件確度 
                     WHERE
                         D.削除区分 = 0 
                         AND D.受注月度 = {202506}

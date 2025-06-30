@@ -29,7 +29,7 @@ namespace Split.ViewModels
         private ObservableCollection<Employee> _employees;
         private ObservableCollection<LatestTotal> _latestTotals;
         private ObservableCollection<ProgressLevel> _progressLevels;
-        private ObservableCollection<Case> _casesByIndividual;
+        private ObservableCollection<ExtendedCaseInfo> _casesByIndividual;
         private ObservableCollection<Case> _customersHistories;
         private ObservableCollection<Pipeline> _pipelines;
 
@@ -170,7 +170,7 @@ namespace Split.ViewModels
             get { return _progressLevels; }
             set { SetProperty(ref _progressLevels, value); }
         }
-        public ObservableCollection<Case> CasesByIndividual
+        public ObservableCollection<ExtendedCaseInfo> CasesByIndividual
         {
             get { return _casesByIndividual; }
             set { SetProperty(ref _casesByIndividual, value); }
@@ -395,6 +395,7 @@ namespace Split.ViewModels
                             , C.名称 AS CustomerName
                             , 記号
                             , 物件確度区分
+                            , {0} AS ChargeEmployeeCode
                         FROM
                             D物件 
                             INNER JOIN D物件担当 
@@ -413,7 +414,7 @@ namespace Split.ViewModels
                             AND M物件確度.物件確度区分 >= {2}
                             AND M物件確度.物件確度区分 <= {3}
                         ";
-                var c = context.Database.SqlQueryRaw<Case>(
+                var c = context.Database.SqlQueryRaw<ExtendedCaseInfo>(
                                     sql,
                                     this.SelectedEmployee.Code,
                                     this.SelectedYear * 100 + this.SelectedMonth,
@@ -426,7 +427,7 @@ namespace Split.ViewModels
                 }
                 else
                 {
-                    this.CasesByIndividual = new ObservableCollection<Case>(c.OrderByDescending(c => c.Level));
+                    this.CasesByIndividual = new ObservableCollection<ExtendedCaseInfo>(c.OrderByDescending(c => c.Level));
                     ;
                 }
 

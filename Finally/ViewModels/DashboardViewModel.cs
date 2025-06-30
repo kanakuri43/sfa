@@ -27,7 +27,7 @@ namespace Finally.ViewModels
         private ObservableCollection<Section> _sections;
         private ObservableCollection<Employee> _employees;
         private ObservableCollection<ProgressLevel> _progressLevels;
-        private ObservableCollection<Case> _cases;
+        private ObservableCollection<ExtendedCaseInfo> _cases;
         private ObservableCollection<MonthlyTotal> _monthlyTotals;
         private ObservableCollection<MonthlyTotal> _yearlyTotals;
         private ObservableCollection<Calendar> _calendars;
@@ -135,7 +135,7 @@ namespace Finally.ViewModels
             get { return _yearlyTotals; }
             set { SetProperty(ref _yearlyTotals, value); }
         }
-        public ObservableCollection<Case> Cases
+        public ObservableCollection<ExtendedCaseInfo> Cases
         {
             get { return _cases; }
             set { SetProperty(ref _cases, value); }
@@ -236,6 +236,7 @@ namespace Finally.ViewModels
                                 , C.名称 AS CustomerName
                                 , 記号
                                 , 物件確度区分
+                                , CONVERT(SMALLINT, 0) AS ChargeEmployeeCode
                             FROM
                                 D物件 
                                 INNER JOIN D物件担当 
@@ -255,19 +256,19 @@ namespace Finally.ViewModels
                                 AND M物件確度.物件確度区分 <= {this.ProgressLevelMax.Level}
                             ";
 
-                    var c = context.Database.SqlQueryRaw<Case>(sql).ToList();
+                    var c = context.Database.SqlQueryRaw<ExtendedCaseInfo>(sql).ToList();
                     if (c == null)
                     {
-                        this.Cases = new ObservableCollection<Case>();
+                        this.Cases = new ObservableCollection<ExtendedCaseInfo>();
                     }
                     else
                     {
-                        this.Cases = new ObservableCollection<Case>(c.OrderByDescending(c => c.Level));
+                        this.Cases = new ObservableCollection<ExtendedCaseInfo>(c.OrderByDescending(c => c.Level));
                     }
                 }
                 else
                 {
-                    this.Cases = new ObservableCollection<Case>();
+                    this.Cases = new ObservableCollection<ExtendedCaseInfo>();
                 }
             }
         }
@@ -279,7 +280,7 @@ namespace Finally.ViewModels
             {
                 this.MonthlyTotals = new ObservableCollection<MonthlyTotal>();
                 this.YearlyTotals = new ObservableCollection<MonthlyTotal>();
-                this.Cases = new ObservableCollection<Case>();
+                this.Cases = new ObservableCollection<ExtendedCaseInfo>();
                 return;
             }
 
@@ -384,7 +385,7 @@ namespace Finally.ViewModels
                     this.YearlyTotals = new ObservableCollection<MonthlyTotal> { yt };
                 }
 
-                this.Cases = new ObservableCollection<Case>();
+                this.Cases = new ObservableCollection<ExtendedCaseInfo>();
             }
         }
 

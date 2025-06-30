@@ -25,7 +25,7 @@ namespace Tracer.ViewModels
         private int _selectedProgressLevel;
         private ProgressLevel _progressLevelMin;
         private ProgressLevel _progressLevelMax;
-        private ObservableCollection<Case> _cases;
+        private ObservableCollection<ExtendedCaseInfo> _cases;
         private ObservableCollection<CaseRevision> _caseRevisions;
 
         public ObservableCollection<Section> Sections
@@ -74,7 +74,7 @@ namespace Tracer.ViewModels
             get { return _progressLevelMax; }
             set { SetProperty(ref _progressLevelMax, value); }
         }
-        public ObservableCollection<Case> Cases
+        public ObservableCollection<ExtendedCaseInfo> Cases
         {
             get { return _cases; }
             set { SetProperty(ref _cases, value); }
@@ -176,7 +176,7 @@ namespace Tracer.ViewModels
                             , C.名称 AS CustomerName
                             , 記号
                             , 物件確度区分
-                            , ISNULL(CR.revision_count, 0) AS revision_count
+                            , ISNULL(CR.revision_count, 0) AS RevisionCount
                         FROM
                             D物件 
                             INNER JOIN D物件担当 
@@ -204,14 +204,14 @@ namespace Tracer.ViewModels
                             AND M物件確度.物件確度区分 >= {this.ProgressLevelMin.Level}
                             AND M物件確度.物件確度区分 <= {this.ProgressLevelMax.Level}
                         ";
-                var c = context.Database.SqlQueryRaw<Case>(sql).ToList();
+                var c = context.Database.SqlQueryRaw<ExtendedCaseInfo>(sql).ToList();
                 if (c == null)
                 {
                     return;
                 }
                 else
                 {
-                    this.Cases = new ObservableCollection<Case>(c.OrderByDescending(c => c.Level));
+                    this.Cases = new ObservableCollection<ExtendedCaseInfo>(c.OrderByDescending(c => c.Level));
                 
                 }
 
