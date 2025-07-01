@@ -29,7 +29,8 @@ namespace Split.ViewModels
         private ObservableCollection<Employee> _employees;
         private ObservableCollection<LatestTotal> _latestTotals;
         private ObservableCollection<ProgressLevel> _progressLevels;
-        private ObservableCollection<ExtendedCaseInfo> _casesByIndividual;
+        private ObservableCollection<ExtendedCaseInfo> _activeCases;
+        private ObservableCollection<ExtendedCaseInfo> _inactiveCases;
         private ObservableCollection<Case> _customersHistories;
         private ObservableCollection<Pipeline> _pipelines;
 
@@ -170,10 +171,15 @@ namespace Split.ViewModels
             get { return _progressLevels; }
             set { SetProperty(ref _progressLevels, value); }
         }
-        public ObservableCollection<ExtendedCaseInfo> CasesByIndividual
+        public ObservableCollection<ExtendedCaseInfo> ActiveCases
         {
-            get { return _casesByIndividual; }
-            set { SetProperty(ref _casesByIndividual, value); }
+            get { return _activeCases; }
+            set { SetProperty(ref _activeCases, value); }
+        }
+        public ObservableCollection<ExtendedCaseInfo> InactiveCases
+        {
+            get { return _inactiveCases; }
+            set { SetProperty(ref _inactiveCases, value); }
         }
         public ObservableCollection<Case> CustomersHistories
         {
@@ -414,20 +420,62 @@ namespace Split.ViewModels
                             AND M物件確度.物件確度区分 >= {2}
                             AND M物件確度.物件確度区分 <= {3}
                         ";
-                var c = context.Database.SqlQueryRaw<ExtendedCaseInfo>(
+                var ac = context.Database.SqlQueryRaw<ExtendedCaseInfo>(
                                     sql,
                                     this.SelectedEmployee.Code,
                                     this.SelectedYear * 100 + this.SelectedMonth,
                                     this.ProgressLevelMin.Level,
                                     this.ProgressLevelMax.Level
                                 ).ToList();
-                if (c == null)
+                if (ac == null)
                 {
                     return;
                 }
                 else
                 {
-                    this.CasesByIndividual = new ObservableCollection<ExtendedCaseInfo>(c.OrderByDescending(c => c.ProgressLevel));
+                    this.ActiveCases = new ObservableCollection<ExtendedCaseInfo>(ac.OrderByDescending(ac => ac.ProgressLevel));
+                    ;
+                }
+
+                sql = @"
+                        SELECT
+                            D物件.*
+                            , C.連番 AS CustomerCode
+                            , C.名称 AS CustomerName
+                            , 記号 AS Symbol
+                            , 物件確度区分 AS ProgressLevel
+                            , {0} AS ChargeEmployeeCode
+                        FROM
+                            D物件 
+                            INNER JOIN D物件担当 
+                                ON D物件担当.物件連番 = D物件.連番 
+                                AND D物件担当.担当区分 = 1 
+                            LEFT JOIN M物件確度 
+                                ON M物件確度.コード = D物件.物件確度 
+							LEFT JOIN D物件顧客 CC
+							    ON D物件.連番 = CC.物件連番
+							LEFT JOIN D顧客 C
+							    ON CC.顧客連番 = C.連番
+                        WHERE
+                            D物件担当.社員コード = {0} 
+                            AND D物件.受注月度 = {1} 
+                            AND D物件.削除区分 = 0 
+                            AND M物件確度.物件確度区分 >= 30
+                        ";
+                var ic = context.Database.SqlQueryRaw<ExtendedCaseInfo>(
+                                    sql,
+                                    this.SelectedEmployee.Code,
+                                    this.SelectedYear * 100 + this.SelectedMonth,
+                                    this.ProgressLevelMin.Level,
+                                    this.ProgressLevelMax.Level
+                                ).ToList();
+                if (ic == null)
+                {
+                    return;
+                }
+                else
+                {
+                    this.InactiveCases = new ObservableCollection<ExtendedCaseInfo>(ic.OrderByDescending(ic => ic.ProgressLevel));
                     ;
                 }
 

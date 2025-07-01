@@ -135,6 +135,8 @@ namespace CaseManager.ViewModels
                         , D物件担当.社員コード AS ChargeEmployeeCode
                         , D物件顧客.顧客連番 AS CustomerCode
                         , D顧客.名称 AS CustomerName
+                        , 記号 AS Symbol
+                        , 物件確度区分 AS ProgressLevel
                     FROM
                         D物件 D 
                         INNER JOIN D物件担当 
@@ -148,7 +150,7 @@ namespace CaseManager.ViewModels
                             ON M物件確度.コード = D.物件確度 
                     WHERE
                         D.削除区分 = 0 
-                        AND D.受注月度 = {202506}
+                        AND D.受注月度 = {202507}
                         ";
 
                 var c = context.Database.SqlQueryRaw<ExtendedCaseInfo>(sql).ToList();
@@ -158,7 +160,7 @@ namespace CaseManager.ViewModels
                 }
                 else
                 {
-                    this.ExtendedCaseInfos = new ObservableCollection<ExtendedCaseInfo>(c.OrderByDescending(c => c.Level));
+                    this.ExtendedCaseInfos = new ObservableCollection<ExtendedCaseInfo>(c.OrderByDescending(c => c.ProgressLevel));
                 }
             }
         }
