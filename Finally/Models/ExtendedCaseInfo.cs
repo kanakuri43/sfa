@@ -10,6 +10,7 @@ namespace Finally.Models
     public class ExtendedCaseInfo : sfa.Models.Case
     {
         public Int16 ChargeEmployeeCode { get; set; }
+        public string ChargeEmployeeName { get; set; }
 
         public int CustomerCode { get; set; }
 

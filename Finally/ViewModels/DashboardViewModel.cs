@@ -236,12 +236,15 @@ namespace Finally.ViewModels
                                 , C.名称 AS CustomerName
                                 , 記号 AS Symbol
                                 , 物件確度区分 AS ProgressLevel
-                                , CONVERT(SMALLINT, 0) AS ChargeEmployeeCode
+                                , CONVERT(SMALLINT, D物件担当.社員コード) AS ChargeEmployeeCode
+                                , M社員.氏名 AS ChargeEmployeeName
                             FROM
                                 D物件 
                                 INNER JOIN D物件担当 
-                                    ON D物件担当.物件連番 = D物件.連番 
+                                    ON D物件.連番 = D物件担当.物件連番
                                     AND D物件担当.担当区分 = 1 
+                                INNER JOIN M社員 
+                                    ON D物件担当.社員コード = M社員.コード
                                 LEFT JOIN M物件確度 
                                     ON M物件確度.コード = D物件.物件確度 
                                 LEFT JOIN D物件顧客 CC
