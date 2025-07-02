@@ -10,12 +10,12 @@ namespace Tracer.Models
     {
         public int RevisionCount { get; set; }
         public int EalpsedDays { get; set; }
-
         public int CustomerCode { get; set; }
 
         public string CustomerName { get; set; }
-        public string Symbol { get; set; }
+        public string ProgressSymbol { get; set; }
         public byte ProgressLevel { get; set; }
+        public string Sign { get; set; }
 
     }
 }

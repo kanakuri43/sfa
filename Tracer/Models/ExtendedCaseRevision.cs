@@ -8,7 +8,7 @@ namespace Tracer.Models
 {
     public class ExtendedCaseRevision : CaseRevision
     {
-        public string Symbol { get; set; }
+        public string ProgressSymbol { get; set; }
         public byte ProgressLevel { get; set; }
 
     }

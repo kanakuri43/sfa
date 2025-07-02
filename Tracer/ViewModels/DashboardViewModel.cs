@@ -16,6 +16,8 @@ namespace Tracer.ViewModels
     {
         private readonly IRegionManager _regionManager;
 
+        private ObservableCollection<int> _alertElapsedDays;
+        private int _selectedAlertElapsedDay;
         private ObservableCollection<Section> _sections;
         private ObservableCollection<Employee> _employees;
         private Section _selectedSection;
@@ -84,6 +86,16 @@ namespace Tracer.ViewModels
             get { return _caseRevisions; }
             set { SetProperty(ref _caseRevisions, value); }
         }
+        public ObservableCollection<int> AlertElapsedDays
+        {
+            get { return _alertElapsedDays; }
+            set { SetProperty(ref _alertElapsedDays, value); }
+        }
+        public int SelectedAlertElapsedDay
+        {
+            get { return _selectedAlertElapsedDay; }
+            set { SetProperty(ref _selectedAlertElapsedDay, value); }
+        }
 
         public DelegateCommand SectionSelectionChanged { get; }
         public DelegateCommand EmployeeSelectionChanged { get; }
@@ -121,6 +133,8 @@ namespace Tracer.ViewModels
 
             }
 
+            AlertElapsedDays = new ObservableCollection<int>(Enumerable.Range(1, 4).Select(x => x * 7));
+
             // 社員リスト 部署変更時に再度呼び出すので関数化
             FetchEmployeeList();
 
@@ -153,7 +167,7 @@ namespace Tracer.ViewModels
                 var sql = $@"
                         SELECT
                             case_revisions.*
-                            , 記号 AS Symbol
+                            , 記号 AS ProgressSymbol
                             , 物件確度区分 AS ProgressLevel
                         FROM
                             case_revisions 
@@ -191,10 +205,11 @@ namespace Tracer.ViewModels
                             D物件.*
                             , ISNULL(C.連番, 0) AS CustomerCode
                             , ISNULL(C.名称, 0) AS CustomerName
-                            , 記号 AS Symbol
+                            , 記号 AS ProgressSymbol
                             , 物件確度区分 AS ProgressLevel
                             , ISNULL(CR.revision_count, 0) AS RevisionCount
                             , ISNULL(CR.elapsed_days, 0) AS EalpsedDays
+                            , '' AS Sign
                         FROM
                             D物件 
                             INNER JOIN D物件担当 

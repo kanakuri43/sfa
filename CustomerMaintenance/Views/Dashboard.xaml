@@ -24,7 +24,7 @@
                 <RowDefinition />
                 <RowDefinition Height="40"/>
                 <RowDefinition Height="40"/>
-                <RowDefinition Height="30"/>
+                <RowDefinition Height="100"/>
             </Grid.RowDefinitions>
             <TextBox Grid.Row="0" 
                      Controls:TextBoxHelper.Watermark="名称検索"/>
@@ -62,11 +62,19 @@
                 </i:Interaction.Triggers>
             </ListBox>
             <StackPanel Grid.Row="3"
+                        HorizontalAlignment="Center"
                         Orientation="Horizontal">
-                <Button Content="All"
-                        Width="100"/>
-                <Button Content="Clear"
-                        Width="100"/>
+                <Button Command="{Binding SelectAllEmployees}"
+                        Content="All"
+                        Margin="4"
+                        Width="70"
+                        Style="{DynamicResource MahApps.Styles.Button.Flat}"/>
+                <Button Command="{Binding DeselectAllEmployees}"
+                        Content="Clear"
+                        Margin="4"
+                        Width="70"
+                        Style="{DynamicResource MahApps.Styles.Button.Flat}"/>
+                
             </StackPanel>
 
         </Grid>

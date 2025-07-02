@@ -20,6 +20,7 @@
                 <RowDefinition Height="30"/>
                 <RowDefinition />
                 <RowDefinition Height="80"/>
+                <RowDefinition Height="30"/>
                 <RowDefinition Height="200"/>
             </Grid.RowDefinitions>
             <ComboBox Grid.Row="0"
@@ -91,6 +92,29 @@
 
             </Grid>
 
+            <Grid Grid.Row="3" >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" 
+                           Text="経過アラート"
+                           VerticalAlignment="Center"/>
+                <ComboBox Grid.Column="1" 
+                          ItemsSource="{Binding AlertElapsedDays}"
+                          SelectedValue="{Binding SelectedAlertElapsedDays}"
+                          SelectedItem="{Binding SelectedAlertElapsedDays, Mode=TwoWay}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="SelectionChanged">
+                            <prism:InvokeCommandAction 
+                            Command="{Binding AlertElapsedDayChanged}" 
+                            TriggerParameterPath="AddedItems"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </ComboBox>
+
+            </Grid>
+
         </Grid>
         <ListView Grid.Column="1" 
                       Margin="10,0,0,0"
@@ -99,17 +123,18 @@
 
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="確度" DisplayMemberBinding="{Binding Symbol}" Width="35"/>
+                    <GridViewColumn DisplayMemberBinding="{Binding Sign}" Width="20"/>
+                    <GridViewColumn Header="確度" DisplayMemberBinding="{Binding ProgressSymbol}" Width="35"/>
                     <GridViewColumn Header="顧客" DisplayMemberBinding="{Binding CustomerName}" Width="170"/>
                     <GridViewColumn Header="案件" DisplayMemberBinding="{Binding CaseName}" Width="170"/>
-                    <GridViewColumn Header="売上" Width="80">
+                    <GridViewColumn Header="売上" Width="70">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding SalesPrice, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="粗利" Width="80">
+                    <GridViewColumn Header="粗利" Width="70">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding ProfitPrice, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
@@ -145,7 +170,7 @@
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="日付" DisplayMemberBinding="{Binding DetectedDate, StringFormat={}{0:yyyy/MM/dd}}" Width="80"/>
-                    <GridViewColumn Header="確度" DisplayMemberBinding="{Binding Symbol}" Width="35"/>
+                    <GridViewColumn Header="確度" DisplayMemberBinding="{Binding ProgressSymbol}" Width="35"/>
                     <GridViewColumn Header="受注" DisplayMemberBinding="{Binding OrderYearMonth}" Width="60"/>
                     <GridViewColumn Header="売上" Width="80">
                         <GridViewColumn.CellTemplate>
