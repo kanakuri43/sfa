@@ -5,6 +5,7 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="..\sfa\Behaviors\SortableListViewBehavior.cs" Link="Behaviors\SortableListViewBehavior.cs" />
     <Compile Include="..\sfa\Models\Case.cs" Link="Models\Case.cs" />
     <Compile Include="..\sfa\Models\Employee.cs" Link="Models\Employee.cs" />
     <Compile Include="..\sfa\Models\Pipeline.cs" Link="Models\Pipeline.cs" />
@@ -21,5 +22,11 @@
     <PackageReference Include="MahApps.Metro.IconPacks" Version="5.1.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.6" />
     <PackageReference Include="Prism.Unity" Version="8.1.97" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Behaviors\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\sfa\sfa.csproj" />
   </ItemGroup>
 </Project>

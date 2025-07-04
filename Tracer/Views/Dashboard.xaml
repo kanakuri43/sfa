@@ -6,6 +6,8 @@
              xmlns:prism="http://prismlibrary.com/"
              xmlns:local="clr-namespace:Tracer.Converters"             
              xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+             xmlns:behaviors="clr-namespace:sfa.Behaviors;assembly=sfa"
+
              prism:ViewModelLocator.AutoWireViewModel="True">
     <UserControl.Resources>
         <Style x:Key="HiddenHeaderStyle" TargetType="{x:Type GridViewColumnHeader}">
@@ -174,34 +176,65 @@
                   ItemsSource="{Binding Cases}" 
                   SelectedItem="{Binding SelectedCase, Mode=TwoWay}"
                   ItemContainerStyle="{StaticResource AlertListViewItemStyle}">
+            <i:Interaction.Behaviors>
+                <behaviors:SortableListViewBehavior FirstSort="CustomerName" />
+            </i:Interaction.Behaviors>
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="*" DisplayMemberBinding="{Binding Sign}" Width="15"/>
-                    <GridViewColumn Header="確度" DisplayMemberBinding="{Binding ProgressSymbol}" Width="35"/>
-                    <GridViewColumn Header="顧客" DisplayMemberBinding="{Binding CustomerName}" Width="170"/>
-                    <GridViewColumn Header="案件" DisplayMemberBinding="{Binding CaseName}" Width="170"/>
-                    <GridViewColumn Header="売上" Width="70">
+                    <GridViewColumn DisplayMemberBinding="{Binding Sign}" Width="15">
+                        <GridViewColumn.Header>
+                            <GridViewColumnHeader Content="*" Tag="Sign"/>
+                        </GridViewColumn.Header>
+                    </GridViewColumn>
+                    <GridViewColumn DisplayMemberBinding="{Binding ProgressSymbol}" Width="35">
+                        <GridViewColumn.Header>
+                            <GridViewColumnHeader Content="確度" Tag="ProgressSymbol"/>
+                        </GridViewColumn.Header>
+                    </GridViewColumn>
+                    <GridViewColumn DisplayMemberBinding="{Binding CustomerName}" Width="170">
+                        <GridViewColumn.Header>
+                            <GridViewColumnHeader Content="顧客" Tag="CustomerName"/>
+                        </GridViewColumn.Header>
+                    </GridViewColumn>
+                    <GridViewColumn DisplayMemberBinding="{Binding CaseName}" Width="170">
+                        <GridViewColumn.Header>
+                            <GridViewColumnHeader Content="案件" Tag="CaseName"/>
+                        </GridViewColumn.Header>
+                    </GridViewColumn>
+                    <GridViewColumn Width="70">
+                        <GridViewColumn.Header>
+                            <GridViewColumnHeader Content="売上" Tag="SalesPrice"/>
+                        </GridViewColumn.Header>
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding SalesPrice, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="粗利" Width="70">
+                    <GridViewColumn Width="70">
+                        <GridViewColumn.Header>
+                            <GridViewColumnHeader Content="粗利" Tag="ProfitPrice"/>
+                        </GridViewColumn.Header>
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding ProfitPrice, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="rev" Width="35">
+                    <GridViewColumn Width="35">
+                        <GridViewColumn.Header>
+                            <GridViewColumnHeader Content="rev" Tag="RevisionCount"/>
+                        </GridViewColumn.Header>
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding RevisionCount, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="ela" Width="35">
+                    <GridViewColumn Width="35">
+                        <GridViewColumn.Header>
+                            <GridViewColumnHeader Content="ela" Tag="EalpsedDays"/>
+                        </GridViewColumn.Header>
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding EalpsedDays, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
