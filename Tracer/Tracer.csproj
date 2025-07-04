@@ -7,6 +7,7 @@
   <ItemGroup>
     <Compile Include="..\sfa\Models\Case.cs" Link="Models\Case.cs" />
     <Compile Include="..\sfa\Models\Employee.cs" Link="Models\Employee.cs" />
+    <Compile Include="..\sfa\Models\Pipeline.cs" Link="Models\Pipeline.cs" />
     <Compile Include="..\sfa\Models\ProgressLevel.cs" Link="Models\ProgressLevel.cs" />
     <Compile Include="..\sfa\Models\Section.cs" Link="Models\Section.cs" />
   </ItemGroup>

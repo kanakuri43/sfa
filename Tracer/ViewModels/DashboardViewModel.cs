@@ -9,6 +9,7 @@ using sfa.Models;
 using Microsoft.EntityFrameworkCore;
 using Tracer.Models;
 using System.Windows.Data;
+using sfa.Models;
 
 namespace Tracer.ViewModels
 {
@@ -29,6 +30,7 @@ namespace Tracer.ViewModels
         private ProgressLevel _progressLevelMax;
         private ObservableCollection<ExtendedCaseInfo> _cases;
         private ObservableCollection<ExtendedCaseRevision> _caseRevisions;
+        private ObservableCollection<Pipeline> _pipelines;
 
         public ObservableCollection<Section> Sections
         {
@@ -96,6 +98,11 @@ namespace Tracer.ViewModels
             get { return _selectedAlertElapsedDay; }
             set { SetProperty(ref _selectedAlertElapsedDay, value); }
         }
+        public ObservableCollection<Pipeline> Pipelines
+        {
+            get { return _pipelines; }
+            set { SetProperty(ref _pipelines, value); }
+        }
 
         public DelegateCommand SectionSelectionChanged { get; }
         public DelegateCommand EmployeeSelectionChanged { get; }
@@ -134,7 +141,7 @@ namespace Tracer.ViewModels
             }
 
             AlertElapsedDays = new ObservableCollection<int>(Enumerable.Range(1, 4).Select(x => x * 7));
-
+            SelectedAlertElapsedDay = 7;
             // 社員リスト 部署変更時に再度呼び出すので関数化
             FetchEmployeeList();
 
@@ -209,7 +216,7 @@ namespace Tracer.ViewModels
                             , 物件確度区分 AS ProgressLevel
                             , ISNULL(CR.revision_count, 0) AS RevisionCount
                             , ISNULL(CR.elapsed_days, 0) AS EalpsedDays
-                            , '' AS Sign
+                            , (CASE WHEN ISNULL(CR.revision_count, 0) = 0 THEN '*' ELSE '' END) AS Sign
                         FROM
                             D物件 
                             INNER JOIN D物件担当 
@@ -247,6 +254,58 @@ namespace Tracer.ViewModels
                 {
                     this.Cases = new ObservableCollection<ExtendedCaseInfo>(c.OrderByDescending(c => c.ProgressLevel));                
                 }
+
+                // パイプライン
+                sql = @"
+                        WITH TotalCount AS (
+                            SELECT COUNT(D物件担当.物件連番) AS TotalCaseCount
+                            FROM M物件確度 
+                                LEFT JOIN D物件 
+                                    ON M物件確度.コード = D物件.物件確度 
+                                    AND D物件.削除区分 = 0 
+                                LEFT JOIN D物件担当 
+                                    ON D物件担当.物件連番 = D物件.連番 
+                                    AND D物件担当.担当区分 = 1 
+                                    AND D物件担当.社員コード = {0} 
+                            WHERE M物件確度.削除区分 = 0 
+                                AND M物件確度.物件確度区分 BETWEEN 1 AND 20
+                        )
+
+                        -- メインクエリ：物件確度区分別の集計
+                        SELECT
+                            物件確度区分 AS Level,
+                            MIN(M物件確度.記号) AS Name,
+                            COUNT(D物件担当.物件連番) AS CaseCount,
+                            (SELECT TotalCaseCount FROM TotalCount) AS TotalCaseCount
+                        FROM M物件確度 
+                            LEFT JOIN D物件 
+                                ON M物件確度.コード = D物件.物件確度 
+                                AND D物件.削除区分 = 0 
+                            LEFT JOIN D物件担当 
+                                ON D物件担当.物件連番 = D物件.連番 
+                                AND D物件担当.担当区分 = 1 
+                                AND D物件担当.社員コード = {0} 
+                        WHERE M物件確度.削除区分 = 0 
+                            AND M物件確度.物件確度区分 BETWEEN 1 AND 20 
+                        GROUP BY 物件確度区分 
+                        ORDER BY 物件確度区分;                        
+                    ";
+                var p = context.Database.SqlQueryRaw<Pipeline>(
+                                    sql,
+                                    this.SelectedEmployee.Code,
+                                    this.ProgressLevelMin.Level,
+                                    this.ProgressLevelMax.Level
+                                ).ToList();
+                if (p == null)
+                {
+                    return;
+                }
+                else
+                {
+                    this.Pipelines = new ObservableCollection<Pipeline>(p.OrderBy(p => p.Level));
+                    ;
+                }
+
             }
         }
         private void SectionSelectionChangedExecute()

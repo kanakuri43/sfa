@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 
-namespace Split.Models
+namespace sfa.Models
 {
     public class Pipeline
     {
