@@ -22,7 +22,7 @@
                 <RowDefinition Height="30"/>
                 <RowDefinition Height="30"/>
                 <RowDefinition />
-                <RowDefinition Height="80"/>
+                <RowDefinition Height="60"/>
                 <RowDefinition Height="200"/>
             </Grid.RowDefinitions>
             <StackPanel Grid.Row="0"
@@ -90,7 +90,7 @@
             </ListBox>
 
             <Grid Grid.Row="3"
-                  VerticalAlignment="Top"
+                  VerticalAlignment="Center"
 >
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="40"/>

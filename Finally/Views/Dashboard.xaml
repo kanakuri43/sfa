@@ -24,7 +24,8 @@
                 <RowDefinition Height="40"/>
                 <RowDefinition />
                 <RowDefinition Height="60"/>
-                <RowDefinition Height="100"/>
+                <RowDefinition Height="60"/>
+                <RowDefinition />
             </Grid.RowDefinitions>
             <StackPanel Grid.Row="0"
                             Margin="0,0,0,0"
@@ -104,8 +105,13 @@
                 </i:Interaction.Triggers>
             </ListBox>
 
-            <Grid Grid.Row="4"
-                  VerticalAlignment="Bottom">
+            <Controls:ToggleSwitch Grid.Row="4"
+                                    VerticalAlignment="Center"
+                                    OffContent="予定を含めない"
+                                    OnContent="予定を含める"/>
+
+            <Grid Grid.Row="5"
+                  VerticalAlignment="Center">
 
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="40"/>
@@ -135,7 +141,6 @@
                            VerticalAlignment="Center"
                            HorizontalAlignment="Right"
                            Text="{Binding ProgressLevelMin.Symbol}"/>
-
             </Grid>
 
         </Grid>
