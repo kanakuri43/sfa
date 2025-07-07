@@ -163,11 +163,11 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="230"/>
                 <RowDefinition Height="230"/>
-                <RowDefinition />
             </Grid.RowDefinitions>
 
             <Grid Grid.Row="0">
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="30"/>
                     <RowDefinition Height="30"/>
                     <RowDefinition Height="30"/>
                     <RowDefinition Height="30"/>
@@ -201,35 +201,35 @@
 
                 <TextBlock Grid.Row="2" Grid.Column="0" 
                                        VerticalAlignment="Center"
-                                       Text="受注済"/>
-
+                                       Text="受注予定"/>
                 <TextBlock Grid.Row="2" Grid.Column="1" 
                                        VerticalAlignment="Center"
                                        TextAlignment="Right"
+                                       Text="{Binding LatestTotals[0].UnfinishedSales ,StringFormat={}{0:N0}}"/>
+                <TextBlock Grid.Row="3" Grid.Column="0" 
+                                       VerticalAlignment="Center"
+                                       Text="受注済"/>
+
+                <TextBlock Grid.Row="3" Grid.Column="1" 
+                                       VerticalAlignment="Center"
+                                       TextAlignment="Right"
                                        Text="{Binding LatestTotals[0].FinishedSales ,StringFormat={}{0:N0}}"/>
-                <TextBlock Grid.Row="2" Grid.Column="2" 
+                <TextBlock Grid.Row="3" Grid.Column="2" 
                                        VerticalAlignment="Center"
                                        TextAlignment="Right"
                                        Text="{Binding SalesProgressRate ,StringFormat={}{0:N0} %}"/>
-                <Controls:MetroProgressBar Grid.Row="2" Grid.Column="3"
+                <Controls:MetroProgressBar Grid.Row="3" Grid.Column="3"
                                                        Margin="2"
                                                        Background="LightGray"
                                                        Minimum="0" Maximum="100"
                                                        Value="{Binding SalesProgressRate}" />
-                <TextBlock Grid.Row="2" Grid.Column="3" 
+                <TextBlock Grid.Row="3" Grid.Column="3" 
                            VerticalAlignment="Center"
                            HorizontalAlignment="Center"
                            Foreground="White"
                            Visibility="{Binding IsSalesCompleted, Converter={StaticResource BooleanToVisibilityConverter}}"
                            Text="Complete"/>
 
-                <TextBlock Grid.Row="3" Grid.Column="0" 
-                                       VerticalAlignment="Center"
-                                       Text="受注予定"/>
-                <TextBlock Grid.Row="3" Grid.Column="1" 
-                                       VerticalAlignment="Center"
-                                       TextAlignment="Right"
-                                       Text="{Binding LatestTotals[0].UnfinishedSales ,StringFormat={}{0:N0}}"/>
 
                 <TextBlock Grid.Row="4" Grid.Column="0" 
                                        VerticalAlignment="Center"
@@ -248,6 +248,13 @@
                                                        Minimum="0" Maximum="100"
                                                        Value="{Binding SalesForecastProgressRate}" />
 
+                <TextBlock Grid.Row="5" Grid.Column="0" 
+                                       VerticalAlignment="Center"
+                                       Text="不足額"/>
+                <TextBlock Grid.Row="5" Grid.Column="1" 
+                                       VerticalAlignment="Center"
+                                       TextAlignment="Right"
+                                       Text="{Binding CurrentSalesTarget ,StringFormat={}{0:N0}}"/>
             </Grid>
             <Grid Grid.Row="1"     >
                 <Grid.RowDefinitions>
@@ -286,35 +293,35 @@
                                     Text="{Binding CurrentProfitTarget, StringFormat={}{0:N0}}"/>
 
                 <TextBlock Grid.Row="2" Grid.Column="0" 
+                            VerticalAlignment="Center"
+                            Text="受注予定"/>
+                <TextBlock Grid.Row="2" Grid.Column="1" 
+                            VerticalAlignment="Center"
+                            TextAlignment="Right"
+                            Text="{Binding LatestTotals[0].UnfinishedProfit ,StringFormat={}{0:N0}}"/>
+                <TextBlock Grid.Row="3" Grid.Column="0" 
                                        VerticalAlignment="Center"
                                        Text="受注済"/>
-                <TextBlock Grid.Row="2" Grid.Column="1" 
+                <TextBlock Grid.Row="3" Grid.Column="1" 
                                        VerticalAlignment="Center"
                                        TextAlignment="Right"
                                        Text="{Binding LatestTotals[0].FinishedProfit ,StringFormat={}{0:N0}}"/>
-                <TextBlock Grid.Row="2" Grid.Column="2" 
+                <TextBlock Grid.Row="3" Grid.Column="2" 
                                     TextAlignment="Right"
                                     VerticalAlignment="Center"
                                     Text="{Binding ProfitProgressRate, StringFormat={}{0:N0} %}"/>
-                <Controls:MetroProgressBar Grid.Row="2" Grid.Column="3"
+                <Controls:MetroProgressBar Grid.Row="3" Grid.Column="3"
                                                        Margin="2"
                                                        Background="LightGray"
                                                        Minimum="0" Maximum="100"
                                                        Value="{Binding ProfitProgressRate}" />
-                <TextBlock Grid.Row="2" Grid.Column="3"             
+                <TextBlock Grid.Row="3" Grid.Column="3"             
                            VerticalAlignment="Center"
                            HorizontalAlignment="Center"
                            Foreground="White"
                            Visibility="{Binding IsProfitCompleted, Converter={StaticResource BooleanToVisibilityConverter}}"
                            Text="Complete"/>
 
-                <TextBlock Grid.Row="3" Grid.Column="0" 
-                            VerticalAlignment="Center"
-                            Text="受注予定"/>
-                <TextBlock Grid.Row="3" Grid.Column="1" 
-                            VerticalAlignment="Center"
-                            TextAlignment="Right"
-                            Text="{Binding LatestTotals[0].UnfinishedProfit ,StringFormat={}{0:N0}}"/>
 
                 <TextBlock Grid.Row="4" Grid.Column="0" 
                                        VerticalAlignment="Center"
@@ -333,16 +340,16 @@
                                                        Minimum="0" Maximum="100"
                                                        Value="{Binding ProfitForecastProgressRate}" />
 
+                <TextBlock Grid.Row="5" Grid.Column="0" 
+                                       VerticalAlignment="Center"
+                                       Text="不足額"/>
+                <TextBlock Grid.Row="5" Grid.Column="1" 
+                                       VerticalAlignment="Center"
+                                       TextAlignment="Right"
+                                       Text="{Binding LatestTotals[0].TotalSales ,StringFormat={}{0:N0}}"/>
 
             </Grid>
 
-            <Grid Grid.Row="2">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="30"/>
-                    <RowDefinition />
-                </Grid.RowDefinitions>
-
-            </Grid>
 
         </Grid>
         <Grid Grid.Column="2">

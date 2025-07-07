@@ -265,9 +265,7 @@ namespace Split.ViewModels
                     ORDER BY
                         L3.コード
                         ";
-                var s = context.Database.SqlQueryRaw<Section>(
-                                    sql
-                                ).ToList();
+                var s = context.Database.SqlQueryRaw<Section>(sql).ToList();
                 if (s == null)
                 {
                     return;
@@ -275,7 +273,7 @@ namespace Split.ViewModels
                 else
                 {
                     this.Sections = new ObservableCollection<Section>(s);
-                    ;
+                    this.SelectedSection = context.Sections.FirstOrDefault(s => s.Code == 21130);
                 }
 
 
@@ -357,13 +355,13 @@ namespace Split.ViewModels
                                     INNER JOIN D物件担当 
                                         ON D物件担当.物件連番 = D物件.連番 
                                         AND D物件担当.担当区分 = 1 
-                                    LEFT JOIN M物件確度 
+                                    INNER JOIN M物件確度 
                                         ON M物件確度.コード = D物件.物件確度 
+                                        AND M物件確度.物件確度区分 BETWEEN 30 AND 100 
                                 WHERE
                                     D物件担当.社員コード = {0} 
                                     AND D物件.受注月度 = {1} 
                                     AND D物件.削除区分 = 0 
-                                    AND M物件確度.物件確度区分 BETWEEN 30 AND 100 
                                 GROUP BY
                                     D物件担当.社員コード
                             ) F 
@@ -377,14 +375,14 @@ namespace Split.ViewModels
                                     INNER JOIN D物件担当 
                                         ON D物件担当.物件連番 = D物件.連番 
                                         AND D物件担当.担当区分 = 1 
-                                    LEFT JOIN M物件確度 
+                                    INNER JOIN M物件確度 
                                         ON M物件確度.コード = D物件.物件確度 
+                                        AND M物件確度.物件確度区分 >= {2}
+                                        AND M物件確度.物件確度区分 <= {3}
                                 WHERE
                                     D物件担当.社員コード = {0}
                                     AND D物件.受注月度 = {1} 
                                     AND D物件.削除区分 = 0 
-                                    AND M物件確度.物件確度区分 >= {2}
-                                    AND M物件確度.物件確度区分 <= {3}
                                 GROUP BY
                                     D物件担当.社員コード
                             ) U 
@@ -446,18 +444,18 @@ namespace Split.ViewModels
                             INNER JOIN D物件担当 
                                 ON D物件担当.物件連番 = D物件.連番 
                                 AND D物件担当.担当区分 = 1 
-                            LEFT JOIN M物件確度 
+                            INNER JOIN M物件確度 
                                 ON M物件確度.コード = D物件.物件確度 
-							LEFT JOIN D物件顧客 CC
+                                AND M物件確度.物件確度区分 >= {2}
+                                AND M物件確度.物件確度区分 <= {3}
+							INNER JOIN D物件顧客 CC
 							    ON D物件.連番 = CC.物件連番
-							LEFT JOIN D顧客 C
+							INNER JOIN D顧客 C
 							    ON CC.顧客連番 = C.連番
                         WHERE
                             D物件担当.社員コード = {0} 
                             AND D物件.受注月度 = {1} 
                             AND D物件.削除区分 = 0 
-                            AND M物件確度.物件確度区分 >= {2}
-                            AND M物件確度.物件確度区分 <= {3}
                         ";
                 var ac = context.Database.SqlQueryRaw<ExtendedCaseInfo>(
                                     sql,
@@ -489,17 +487,17 @@ namespace Split.ViewModels
                             INNER JOIN D物件担当 
                                 ON D物件担当.物件連番 = D物件.連番 
                                 AND D物件担当.担当区分 = 1 
-                            LEFT JOIN M物件確度 
+                            INNER JOIN M物件確度 
                                 ON M物件確度.コード = D物件.物件確度 
-							LEFT JOIN D物件顧客 CC
+                                AND M物件確度.物件確度区分 >= 30
+							INNER JOIN D物件顧客 CC
 							    ON D物件.連番 = CC.物件連番
-							LEFT JOIN D顧客 C
+							INNER JOIN D顧客 C
 							    ON CC.顧客連番 = C.連番
                         WHERE
                             D物件担当.社員コード = {0} 
                             AND D物件.受注月度 = {1} 
                             AND D物件.削除区分 = 0 
-                            AND M物件確度.物件確度区分 >= 30
                         ";
                 var ic = context.Database.SqlQueryRaw<ExtendedCaseInfo>(
                                     sql,
