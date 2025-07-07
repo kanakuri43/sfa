@@ -41,11 +41,13 @@ namespace Split.ViewModels
         private ProgressLevel _progressLevelMax;
 
         private decimal _currentSalesTarget;
+        private decimal _salesShortfall;
         private float _salesProgressRate;
         private float _salesForecastProgressRate;
         private float _salesPreviousRate;
 
         private decimal _currentProfitTarget;
+        private decimal _profitShortfall;
         private float _profitProgressRate;
         private float _profitForecastProgressRate;
         private float _profitPreviousRate;
@@ -213,6 +215,16 @@ namespace Split.ViewModels
             get { return ProfitProgressRate >= 100; }
         }
 
+        public decimal SalesShortfall
+        {
+            get { return _salesShortfall; }
+            set { SetProperty(ref _salesShortfall, value); }
+        }
+        public decimal ProfitShortfall
+        {
+            get { return _profitShortfall; }
+            set { SetProperty(ref _profitShortfall, value); }
+        }
 
         public DelegateCommand YearSelectionChanged { get; }
         public DelegateCommand MonthSelectionChanged { get; }
@@ -416,21 +428,24 @@ namespace Split.ViewModels
                 { 
                     this.LatestTotals = new ObservableCollection<LatestTotal> { la };
 
-                    // 達成率
+                    // 売上達成率
                     if (CurrentSalesTarget > 0)
                     {
                         SalesProgressRate = ((float)(LatestTotals[0].FinishedSales / CurrentSalesTarget) * 100);
                         SalesForecastProgressRate = ((float)((LatestTotals[0].FinishedSales + LatestTotals[0].UnfinishedSales) / CurrentSalesTarget) * 100);
+                        SalesShortfall = CurrentSalesTarget - LatestTotals[0].FinishedSales;
                     }
                     else
                     {
                         SalesProgressRate = 0;
                         SalesForecastProgressRate = 0;
                     }
+                    // 粗利達成率
                     if (CurrentProfitTarget > 0)
                     {
                         ProfitProgressRate = ((float)(LatestTotals[0].FinishedProfit / CurrentProfitTarget) * 100);
                         ProfitForecastProgressRate = ((float)((LatestTotals[0].FinishedProfit + LatestTotals[0].UnfinishedProfit) / CurrentProfitTarget) * 100);
+                        ProfitShortfall = CurrentProfitTarget - LatestTotals[0].FinishedProfit;
                     }
                     else
                     {
