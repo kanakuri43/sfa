@@ -573,11 +573,25 @@ namespace Split.ViewModels
         private void FetchEmployeeList()
         {
 
+            //using (var context = new AppDbContext())
+            //{
+            //    Employees = new ObservableCollection<Employee>(
+            //        context.Employees
+            //            .Where(e => e.SectionCode == this.SelectedSection.Code && e.State == 0)
+            //            .ToList()
+            //    );
+            //}
             using (var context = new AppDbContext())
             {
+                // int型の部署コードを5桁の文字列に変換してから処理
+                string sectionCodeStr = this.SelectedSection.Code.ToString("D5");
+                string searchPrefix = sectionCodeStr.TrimEnd('0');
+
                 Employees = new ObservableCollection<Employee>(
                     context.Employees
-                        .Where(e => e.SectionCode == this.SelectedSection.Code && e.State == 0)
+                        .Where(e => e.State == 0)
+                        .AsEnumerable() // DB側処理後、メモリ上で文字列変換
+                        .Where(e => e.SectionCode.ToString("D5").StartsWith(searchPrefix))
                         .ToList()
                 );
             }
