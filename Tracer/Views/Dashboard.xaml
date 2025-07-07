@@ -46,7 +46,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="30"/>
                 <RowDefinition />
-                <RowDefinition Height="70"/>
+                <RowDefinition Height="60"/>
                 <RowDefinition Height="30"/>
                 <RowDefinition Height="200"/>
             </Grid.RowDefinitions>
@@ -87,7 +87,7 @@
                 </i:Interaction.Triggers>
             </ListBox>
 
-            <Grid Grid.Row="2" VerticalAlignment="Top">
+            <Grid Grid.Row="2" VerticalAlignment="Center">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="40"/>
                     <ColumnDefinition/>
@@ -181,9 +181,9 @@
             </i:Interaction.Behaviors>
             <ListView.View>
                 <GridView>
-                    <GridViewColumn DisplayMemberBinding="{Binding Sign}" Width="15">
+                    <GridViewColumn DisplayMemberBinding="{Binding OrderYearMonth}" Width="50">
                         <GridViewColumn.Header>
-                            <GridViewColumnHeader Content="*" Tag="Sign"/>
+                            <GridViewColumnHeader Content="受予" Tag="ProgressSymbol"/>
                         </GridViewColumn.Header>
                     </GridViewColumn>
                     <GridViewColumn DisplayMemberBinding="{Binding ProgressSymbol}" Width="35">
@@ -221,9 +221,9 @@
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Width="35">
+                    <GridViewColumn Width="25">
                         <GridViewColumn.Header>
-                            <GridViewColumnHeader Content="rev" Tag="RevisionCount"/>
+                            <GridViewColumnHeader Content="re" Tag="RevisionCount"/>
                         </GridViewColumn.Header>
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
@@ -231,9 +231,9 @@
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Width="35">
+                    <GridViewColumn Width="25">
                         <GridViewColumn.Header>
-                            <GridViewColumnHeader Content="ela" Tag="EalpsedDays"/>
+                            <GridViewColumnHeader Content="el" Tag="EalpsedDays"/>
                         </GridViewColumn.Header>
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
@@ -257,7 +257,7 @@
                 <GridView>
                     <GridViewColumn Header="日付" DisplayMemberBinding="{Binding DetectedDate, StringFormat={}{0:yyyy/MM/dd}}" Width="80"/>
                     <GridViewColumn Header="確度" DisplayMemberBinding="{Binding ProgressSymbol}" Width="35"/>
-                    <GridViewColumn Header="受注" DisplayMemberBinding="{Binding OrderYearMonth}" Width="60"/>
+                    <GridViewColumn Header="受予" DisplayMemberBinding="{Binding OrderYearMonth}" Width="60"/>
                     <GridViewColumn Header="売上" Width="80">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>

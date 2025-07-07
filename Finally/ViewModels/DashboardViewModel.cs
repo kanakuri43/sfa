@@ -249,9 +249,9 @@ namespace Finally.ViewModels
                                     ON M物件確度.コード = D物件.物件確度 
                                     AND M物件確度.物件確度区分 >= {this.ProgressLevelMin.Level}
                                     AND M物件確度.物件確度区分 <= {this.ProgressLevelMax.Level}
-                                LEFT JOIN D物件顧客 CC
+                                INNER JOIN D物件顧客 CC
                                     ON D物件.連番 = CC.物件連番
-                                LEFT JOIN D顧客 C
+                                INNER JOIN D顧客 C
                                     ON CC.顧客連番 = C.連番
                             WHERE
                                 D物件担当.社員コード IN ({employeeCodes})

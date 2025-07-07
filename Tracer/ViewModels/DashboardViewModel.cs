@@ -178,7 +178,7 @@ namespace Tracer.ViewModels
                             , 物件確度区分 AS ProgressLevel
                         FROM
                             case_revisions 
-                            LEFT JOIN M物件確度 
+                            INNER JOIN M物件確度 
                                 ON case_revisions.progress_level = M物件確度.コード 
                         WHERE
                             case_revisions.case_id = {this.SelectedCase.Id} 
@@ -222,8 +222,10 @@ namespace Tracer.ViewModels
                             INNER JOIN D物件担当 
                                 ON D物件担当.物件連番 = D物件.連番 
                                 AND D物件担当.担当区分 = 1 
-                            LEFT JOIN M物件確度 
+                            INNER JOIN M物件確度 
                                 ON M物件確度.コード = D物件.物件確度 
+                                AND M物件確度.物件確度区分 >= {this.ProgressLevelMin.Level}
+                                AND M物件確度.物件確度区分 <= {this.ProgressLevelMax.Level}
 							LEFT JOIN D物件顧客 CC
 							    ON D物件.連番 = CC.物件連番
 							LEFT JOIN D顧客 C
@@ -242,8 +244,6 @@ namespace Tracer.ViewModels
                         WHERE
                             D物件担当.社員コード = {this.SelectedEmployee.Code} 
                             AND D物件.削除区分 = 0 
-                            AND M物件確度.物件確度区分 >= {this.ProgressLevelMin.Level}
-                            AND M物件確度.物件確度区分 <= {this.ProgressLevelMax.Level}
                         ";
                 var c = context.Database.SqlQueryRaw<ExtendedCaseInfo>(sql).ToList();
                 if (c == null)
