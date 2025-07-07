@@ -240,6 +240,45 @@ namespace Split.ViewModels
                         );
                 this.SelectedSection = context.Sections.FirstOrDefault(s => s.Code == 21130);
 
+                // 案件リスト
+                var sql = @"
+                    SELECT
+                        L3.コード
+                        , CASE 
+                            WHEN L3.部門レベル = 3 
+                                THEN L1.略称 + '／' + L2.略称 + '／' + L3.略称 
+                            WHEN L3.部門レベル = 2 
+                                THEN L1.略称 + '／' + L2.略称 
+                            ELSE L3.略称 
+                            END AS 名称 
+                        , L3.削除区分
+                    FROM
+                        M部門 L3 
+                        LEFT JOIN M部門 L1 
+                            ON L3.事業部コード = L1.事業部コード 
+                            AND L3.コード - L3.コード % 10000 = L1.コード 
+                        LEFT JOIN M部門 L2 
+                            ON L3.事業部コード = L2.事業部コード 
+                            AND L3.コード - L3.コード % 100 = L2.コード 
+                    WHERE
+                        L3.削除区分 = 0
+                    ORDER BY
+                        L3.コード
+                        ";
+                var s = context.Database.SqlQueryRaw<Section>(
+                                    sql
+                                ).ToList();
+                if (s == null)
+                {
+                    return;
+                }
+                else
+                {
+                    this.Sections = new ObservableCollection<Section>(s);
+                    ;
+                }
+
+
                 // 物権確度
                 this.ProgressLevels = new ObservableCollection<ProgressLevel>(
                                 context.ProgressLevels.Where(s => s.State == 0).ToList()
