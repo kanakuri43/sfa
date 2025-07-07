@@ -245,8 +245,10 @@ namespace Finally.ViewModels
                                     AND D物件担当.担当区分 = 1 
                                 INNER JOIN M社員 
                                     ON D物件担当.社員コード = M社員.コード
-                                LEFT JOIN M物件確度 
+                                INNER JOIN M物件確度 
                                     ON M物件確度.コード = D物件.物件確度 
+                                    AND M物件確度.物件確度区分 >= {this.ProgressLevelMin.Level}
+                                    AND M物件確度.物件確度区分 <= {this.ProgressLevelMax.Level}
                                 LEFT JOIN D物件顧客 CC
                                     ON D物件.連番 = CC.物件連番
                                 LEFT JOIN D顧客 C
@@ -255,8 +257,6 @@ namespace Finally.ViewModels
                                 D物件担当.社員コード IN ({employeeCodes})
                                 AND D物件.受注月度 = {this.SelectedMonthlyTotal.YearMonth}
                                 AND D物件.削除区分 = 0 
-                                AND M物件確度.物件確度区分 >= {this.ProgressLevelMin.Level}
-                                AND M物件確度.物件確度区分 <= {this.ProgressLevelMax.Level}
                             ";
 
                     var c = context.Database.SqlQueryRaw<ExtendedCaseInfo>(sql).ToList();
@@ -295,14 +295,16 @@ namespace Finally.ViewModels
                 var sql = $@"
                             SELECT
                                 CAL.月度 AS YearMonth
-                                , ISNULL(TAR.売上目標, 0) AS TargetSales
-                                , ISNULL(TAR.粗利目標, 0) AS TargetProfit
+                                , ISNULL(TAR.売上目標, 0) / 1000 AS TargetSales
+                                , ISNULL(TAR.粗利目標, 0) / 1000 AS TargetProfit
                                 , 0 AS EmployeeCode
-                                , ISNULL(S.FinishedSales, 0) AS FinishedSales
-                                , ISNULL(S.FinishedProfit, 0) AS FinishedProfit 
-                                , ISNULL(U.UnfinishedSales, 0) AS UnfinishedSales
-                                , ISNULL(U.UnfinishedProfit, 0) AS UnfinishedProfit 
+                                , ISNULL(S.FinishedSales, 0) / 1000 AS FinishedSales
+                                , ISNULL(S.FinishedProfit, 0) / 1000 AS FinishedProfit 
+                                , ISNULL(U.UnfinishedSales, 0) / 1000 AS UnfinishedSales
+                                , ISNULL(U.UnfinishedProfit, 0) / 1000 AS UnfinishedProfit 
                                 , 0 AS MiscIncome 
+                                , (CASE WHEN ISNULL(U.UnfinishedSales, 0) = 0 THEN '' ELSE '*' END) AS HasUnfinishedSales
+                                , (CASE WHEN ISNULL(U.UnfinishedProfit, 0) = 0 THEN '' ELSE '*' END) AS HasUnfinishedProfit
                             FROM
                                 (select 月度 FROM Mカレンダ WHERE 期 = {this.Period} GROUP BY 月度) CAL 
                                 LEFT JOIN ( 
@@ -365,15 +367,15 @@ namespace Finally.ViewModels
                             ORDER BY CAL.月度
                         ";
 
-                var lt = context.Database.SqlQueryRaw<MonthlyTotal>(sql).ToList();
-                if (lt == null)
+                var mt = context.Database.SqlQueryRaw<MonthlyTotal>(sql).ToList();
+                if (mt == null)
                 {
                     this.MonthlyTotals = new ObservableCollection<MonthlyTotal>();
                     this.YearlyTotals = new ObservableCollection<MonthlyTotal>();
                 }
                 else
                 {
-                    this.MonthlyTotals = new ObservableCollection<MonthlyTotal>(lt);
+                    this.MonthlyTotals = new ObservableCollection<MonthlyTotal>(mt);
                     var yt = new MonthlyTotal
                     {
                         YearMonth = this.SelectedYear,

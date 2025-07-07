@@ -17,6 +17,8 @@ namespace Finally.Models
         public decimal FinishedProfit { get; set; }
         public decimal UnfinishedSales { get; set; }
         public decimal UnfinishedProfit { get; set; }
+        public string HasUnfinishedSales { get; set; }
+        public string HasUnfinishedProfit { get; set; }
         public decimal TotalSales
         {
             get { return FinishedSales + UnfinishedSales; }
@@ -39,6 +41,14 @@ namespace Finally.Models
         }
         public int MiscIncome { get; set; }
 
+        public decimal SalesShortfall
+        {
+            get { return TargetSales - (FinishedSales + UnfinishedSales); }
+        }
+        public decimal ProfitShortfall
+        {
+            get { return TargetProfit - (FinishedProfit + UnfinishedProfit); }
+        }
 
     }
 }

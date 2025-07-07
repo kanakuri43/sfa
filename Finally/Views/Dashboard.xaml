@@ -156,8 +156,8 @@
             <Grid Grid.Row="0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="50"/>
-                    <ColumnDefinition Width="320"/>
-                    <ColumnDefinition Width="290"/>
+                    <ColumnDefinition Width="280"/>
+                    <ColumnDefinition Width="250"/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
                 <Border Grid.Column="1" 
@@ -191,27 +191,21 @@
                 <ListView.View>
                     <GridView>
                         <GridViewColumn Header="年月" DisplayMemberBinding="{Binding YearMonth}" Width="50"/>
-                        <GridViewColumn Header="目標" Width="80">
+                        <GridViewColumn Header="目標" Width="60">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding TargetSales, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
-                        <GridViewColumn Header="実績" Width="80">
+                        <GridViewColumn Header="実績" Width="60">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding FinishedSales, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
+                                    <TextBlock Text="{Binding TotalSales, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
-                        <GridViewColumn Header="予定" Width="80">
-                            <GridViewColumn.CellTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding UnfinishedSales, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
-                                </DataTemplate>
-                            </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
+                        <GridViewColumn Header="予" DisplayMemberBinding="{Binding HasUnfinishedSales}" Width="20"/>
                         <GridViewColumn Header="達成率" Width="80">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
@@ -220,28 +214,29 @@
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
-                        
-                        <GridViewColumn Header="目標" Width="70">
+                        <GridViewColumn Header="不足" Width="60">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding SalesShortfall, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+
+                        <GridViewColumn Header="目標" Width="50">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding TargetProfit, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
-                        <GridViewColumn Header="実績" Width="70">
+                        <GridViewColumn Header="実績" Width="50">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding FinishedProfit, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
+                                    <TextBlock Text="{Binding TotalProfit, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
-                        <GridViewColumn Header="予定" Width="70">
-                            <GridViewColumn.CellTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding UnfinishedProfit, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
-                                </DataTemplate>
-                            </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
+                        <GridViewColumn Header="予" DisplayMemberBinding="{Binding HasUnfinishedProfit}" Width="20"/>
                         <GridViewColumn Header="達成率" Width="80">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
@@ -250,7 +245,15 @@
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
-                        <GridViewColumn Header="経費" Width="60">
+                        <GridViewColumn Header="不足" Width="50">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding ProfitShortfall, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+
+                        <GridViewColumn Header="経費" Width="80">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding MiscIncome ,StringFormat={}{0:#,0}}" 
@@ -266,7 +269,7 @@
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
-                        <GridViewColumn Header="営業外" Width="60">
+                        <GridViewColumn Header="営業外" Width="80">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding MiscIncome ,StringFormat={}{0:#,0}}" 
@@ -302,27 +305,21 @@
                 <ListView.View>
                     <GridView ColumnHeaderContainerStyle="{StaticResource HiddenHeaderStyle}">
                         <GridViewColumn Header="年月" DisplayMemberBinding="{Binding YearMonth}" Width="50"/>
-                        <GridViewColumn Header="目標" Width="80">
+                        <GridViewColumn Header="目標" Width="60">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding TargetSales, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
-                        <GridViewColumn Header="実績" Width="80">
+                        <GridViewColumn Header="実績" Width="60">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding FinishedSales, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
-                        <GridViewColumn Header="予定" Width="80">
-                            <GridViewColumn.CellTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding UnfinishedSales, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
-                                </DataTemplate>
-                            </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
+                        <GridViewColumn Header="予" DisplayMemberBinding="{Binding HasUnfinishedSales}" Width="20"/>
                         <GridViewColumn Header="達成率" Width="80">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
@@ -332,27 +329,28 @@
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
-                        <GridViewColumn Header="目標" Width="70">
+                        <GridViewColumn Header="不足" Width="60">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding SalesShortfall, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="目標" Width="50">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding TargetProfit, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
-                        <GridViewColumn Header="実績" Width="70">
+                        <GridViewColumn Header="実績" Width="50">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding FinishedProfit, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
-                        <GridViewColumn Header="予定" Width="70">
-                            <GridViewColumn.CellTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding UnfinishedProfit, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
-                                </DataTemplate>
-                            </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
+                        <GridViewColumn Header="予" DisplayMemberBinding="{Binding HasUnfinishedSales}" Width="20"/>
                         <GridViewColumn Header="達成率" Width="80">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
@@ -362,7 +360,14 @@
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
-                        <GridViewColumn Header="経費" Width="60">
+                        <GridViewColumn Header="不足" Width="50">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding ProfitShortfall, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="経費" Width="80">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding MiscIncome ,StringFormat={}{0:#,0}}" 
@@ -378,7 +383,7 @@
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
-                        <GridViewColumn Header="営業外" Width="60">
+                        <GridViewColumn Header="営業外" Width="80">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding MiscIncome ,StringFormat={}{0:#,0}}" 
