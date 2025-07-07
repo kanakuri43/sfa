@@ -50,6 +50,7 @@ namespace Split.ViewModels
         private float _profitForecastProgressRate;
         private float _profitPreviousRate;
 
+        private string _selectedSectionCode;
 
         private CollectionView _resultCollectionView;
 
@@ -89,6 +90,11 @@ namespace Split.ViewModels
         {
             get { return _selectedSection; }
             set { SetProperty(ref _selectedSection, value); }
+        }
+        public string SelectedSectionCode
+        {
+            get { return _selectedSectionCode; }
+            set { SetProperty(ref _selectedSectionCode, value); }
         }
 
         public Employee SelectedEmployee
@@ -240,7 +246,7 @@ namespace Split.ViewModels
                         );
                 this.SelectedSection = context.Sections.FirstOrDefault(s => s.Code == 21130);
 
-                // 案件リスト
+                // 部署リスト
                 var sql = @"
                     SELECT
                         L3.コード
@@ -273,9 +279,12 @@ namespace Split.ViewModels
                 else
                 {
                     this.Sections = new ObservableCollection<Section>(s);
-                    this.SelectedSection = context.Sections.FirstOrDefault(s => s.Code == 21130);
                 }
-
+                this.SelectedSection = context.Sections.FirstOrDefault(s => s.Code == 21130);
+                if (this.SelectedSection != null)
+                {
+                    this.SelectedSectionCode = this.SelectedSection.Code.ToString();
+                }
 
                 // 物権確度
                 this.ProgressLevels = new ObservableCollection<ProgressLevel>(
@@ -572,25 +581,15 @@ namespace Split.ViewModels
         }
         private void FetchEmployeeList()
         {
-
-            //using (var context = new AppDbContext())
-            //{
-            //    Employees = new ObservableCollection<Employee>(
-            //        context.Employees
-            //            .Where(e => e.SectionCode == this.SelectedSection.Code && e.State == 0)
-            //            .ToList()
-            //    );
-            //}
             using (var context = new AppDbContext())
             {
-                // int型の部署コードを5桁の文字列に変換してから処理
                 string sectionCodeStr = this.SelectedSection.Code.ToString("D5");
                 string searchPrefix = sectionCodeStr.TrimEnd('0');
 
                 Employees = new ObservableCollection<Employee>(
                     context.Employees
                         .Where(e => e.State == 0)
-                        .AsEnumerable() // DB側処理後、メモリ上で文字列変換
+                        .AsEnumerable() 
                         .Where(e => e.SectionCode.ToString("D5").StartsWith(searchPrefix))
                         .ToList()
                 );
