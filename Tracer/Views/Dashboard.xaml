@@ -7,7 +7,7 @@
              xmlns:local="clr-namespace:Tracer.Converters"             
              xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
              xmlns:behaviors="clr-namespace:sfa.Behaviors;assembly=sfa"
-
+             xmlns:oxy="http://oxyplot.org/wpf"
              prism:ViewModelLocator.AutoWireViewModel="True">
     <UserControl.Resources>
         <Style x:Key="HiddenHeaderStyle" TargetType="{x:Type GridViewColumnHeader}">
@@ -138,6 +138,7 @@
                 </ComboBox>
             </Grid>
             <ListView Grid.Row="4" 
+                      Visibility="Hidden"
                       Margin="0,10,0,10"
                       ItemsSource="{Binding Pipelines}" >
 
@@ -186,17 +187,17 @@
                             <GridViewColumnHeader Content="受予" Tag="ProgressSymbol"/>
                         </GridViewColumn.Header>
                     </GridViewColumn>
-                    <GridViewColumn DisplayMemberBinding="{Binding ProgressSymbol}" Width="35">
+                    <GridViewColumn DisplayMemberBinding="{Binding ProgressSymbol}" Width="32">
                         <GridViewColumn.Header>
                             <GridViewColumnHeader Content="確度" Tag="ProgressSymbol"/>
                         </GridViewColumn.Header>
                     </GridViewColumn>
-                    <GridViewColumn DisplayMemberBinding="{Binding CustomerName}" Width="170">
+                    <GridViewColumn DisplayMemberBinding="{Binding CustomerName}" Width="165">
                         <GridViewColumn.Header>
                             <GridViewColumnHeader Content="顧客" Tag="CustomerName"/>
                         </GridViewColumn.Header>
                     </GridViewColumn>
-                    <GridViewColumn DisplayMemberBinding="{Binding CaseName}" Width="170">
+                    <GridViewColumn DisplayMemberBinding="{Binding CaseName}" Width="165">
                         <GridViewColumn.Header>
                             <GridViewColumnHeader Content="案件" Tag="CaseName"/>
                         </GridViewColumn.Header>
@@ -250,35 +251,44 @@
             </i:Interaction.Triggers>
         </ListView>
 
-        <ListView Grid.Column="2" 
+        <Grid Grid.Column="2" >
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition Height="200"/>
+            </Grid.RowDefinitions>
+            <ListView Grid.Row="0"
                   Margin="10,0,0,0"
                   ItemsSource="{Binding CaseRevisions}">
-            <ListView.View>
-                <GridView>
-                    <GridViewColumn Header="日付" DisplayMemberBinding="{Binding DetectedDate, StringFormat={}{0:yyyy/MM/dd}}" Width="80"/>
-                    <GridViewColumn Header="確度" DisplayMemberBinding="{Binding ProgressSymbol}" Width="35"/>
-                    <GridViewColumn Header="受予" DisplayMemberBinding="{Binding OrderYearMonth}" Width="60"/>
-                    <GridViewColumn Header="売上" Width="80">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Sale, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-                    <GridViewColumn Header="粗利" Width="80">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Profit, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-                </GridView>
-            </ListView.View>
-            <i:Interaction.Triggers>
-                <i:EventTrigger EventName="MouseDoubleClick">
-                    <prism:InvokeCommandAction Command="{Binding OrderDoubleClickCommand}"/>
-                </i:EventTrigger>
-            </i:Interaction.Triggers>
-        </ListView>
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="日付" DisplayMemberBinding="{Binding DetectedDate, StringFormat={}{0:yyyy/MM/dd}}" Width="80"/>
+                        <GridViewColumn Header="確度" DisplayMemberBinding="{Binding ProgressSymbol}" Width="35"/>
+                        <GridViewColumn Header="受予" DisplayMemberBinding="{Binding OrderYearMonth}" Width="60"/>
+                        <GridViewColumn Header="売上" Width="75">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Sale, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="粗利" Width="75">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Profit, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                    </GridView>
+                </ListView.View>
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="MouseDoubleClick">
+                        <prism:InvokeCommandAction Command="{Binding OrderDoubleClickCommand}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </ListView>
+            <oxy:PlotView Grid.Row="1" 
+                          Model="{Binding PlotModel}"/>
+
+        </Grid>
     </Grid>
 </UserControl>

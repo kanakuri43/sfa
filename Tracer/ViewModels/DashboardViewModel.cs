@@ -1,14 +1,17 @@
-﻿using Prism.Commands;
+﻿using Microsoft.EntityFrameworkCore;
+using OxyPlot;
+using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Regions;
+using sfa.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using sfa.Models;
-using Microsoft.EntityFrameworkCore;
-using Tracer.Models;
 using System.Windows.Data;
+using System.Windows.Media;
+using Tracer.Models;
+using System.Windows;
 
 namespace Tracer.ViewModels
 {
@@ -31,6 +34,7 @@ namespace Tracer.ViewModels
         private ObservableCollection<ExtendedCaseRevision> _caseRevisions;
         private ObservableCollection<Pipeline> _pipelines;
         private string _selectedSectionCode;
+        private OxyPlot.PlotModel _plotModel;
 
         public ObservableCollection<Section> Sections
         {
@@ -108,6 +112,14 @@ namespace Tracer.ViewModels
             get { return _selectedSectionCode; }
             set { SetProperty(ref _selectedSectionCode, value); }
         }
+        public OxyPlot.PlotModel PlotModel
+        {
+            get => _plotModel;
+            set
+            {
+                SetProperty(ref _plotModel, value); // BindableBaseのSetPropertyを使用
+            }
+        }
 
         public DelegateCommand SectionSelectionChanged { get; }
         public DelegateCommand EmployeeSelectionChanged { get; }
@@ -138,10 +150,10 @@ namespace Tracer.ViewModels
                         , L3.削除区分
                     FROM
                         M部門 L3 
-                        LEFT JOIN M部門 L1 
+                        INNER JOIN M部門 L1 
                             ON L3.事業部コード = L1.事業部コード 
                             AND L3.コード - L3.コード % 10000 = L1.コード 
-                        LEFT JOIN M部門 L2 
+                        INNER JOIN M部門 L2 
                             ON L3.事業部コード = L2.事業部コード 
                             AND L3.コード - L3.コード % 100 = L2.コード 
                     WHERE
@@ -269,11 +281,11 @@ namespace Tracer.ViewModels
                                 ON M物件確度.コード = D物件.物件確度 
                                 AND M物件確度.物件確度区分 >= {this.ProgressLevelMin.Level}
                                 AND M物件確度.物件確度区分 <= {this.ProgressLevelMax.Level}
-							LEFT JOIN D物件顧客 CC
+							INNER JOIN D物件顧客 CC
 							    ON D物件.連番 = CC.物件連番
-							LEFT JOIN D顧客 C
+							INNER JOIN D顧客 C
 							    ON CC.顧客連番 = C.連番
-							LEFT JOIN (
+							INNER JOIN (
                                 SELECT 
                                     case_id
                                     , count(1) AS revision_count
@@ -348,7 +360,7 @@ namespace Tracer.ViewModels
                     this.Pipelines = new ObservableCollection<Pipeline>(p.OrderBy(p => p.Level));
                     ;
                 }
-
+                PlotChart();
             }
         }
         private void SectionSelectionChangedExecute()
@@ -383,6 +395,93 @@ namespace Tracer.ViewModels
             }
 
             UpdateScreen();
+        }
+
+        private void PlotChart()
+        {
+            if (this.Pipelines == null || !this.Pipelines.Any())
+            {
+                return;
+            }
+
+            try
+            {
+                var newPlotModel = new OxyPlot.PlotModel();
+
+                // カテゴリ軸（X軸）を設定 - 年度
+                var categoryAxis = new OxyPlot.Axes.CategoryAxis
+                {
+                    Position = OxyPlot.Axes.AxisPosition.Bottom,
+                    ItemsSource = this.Pipelines.Select(p => p.Name.ToString()).ToList()
+                };
+                newPlotModel.Axes.Add(categoryAxis);
+
+                // 値軸（Y軸）を設定 - 売上・利益
+                var yAxis = new OxyPlot.Axes.LinearAxis()
+                {
+                    Position = OxyPlot.Axes.AxisPosition.Left,
+                    StringFormat = "N0",
+                    Minimum = 0
+                };
+                newPlotModel.Axes.Add(yAxis);
+
+                // MahApps.Metroのテーマカラーを取得
+                var accentBrush = Application.Current.Resources["MahApps.Brushes.Accent"] as SolidColorBrush;
+                var accent2Brush = Application.Current.Resources["MahApps.Brushes.Accent2"] as SolidColorBrush;
+
+                // OxyColorに変換
+                var accentColor = accentBrush != null ?
+                    OxyColor.FromArgb(accentBrush.Color.A, accentBrush.Color.R, accentBrush.Color.G, accentBrush.Color.B) :
+                    OxyColors.Blue;
+
+                var accent2Color = accent2Brush != null ?
+                    OxyColor.FromArgb(accent2Brush.Color.A, accent2Brush.Color.R, accent2Brush.Color.G, accent2Brush.Color.B) :
+                    OxyColors.Red;
+
+                // 売上の縦棒グラフシリーズ
+                var salesSeries = new OxyPlot.Series.RectangleBarSeries()
+                {
+                    Title = "売上",
+                    FillColor = accent2Color,
+                    StrokeColor = accent2Color,
+                    StrokeThickness = 1
+                };
+
+                // 利益の縦棒グラフシリーズ
+                var profitSeries = new OxyPlot.Series.RectangleBarSeries()
+                {
+                    Title = "利益",
+                    FillColor = accentColor,
+                    StrokeColor = accentColor,
+                    StrokeThickness = 1
+                };
+
+                // データポイントを追加
+                double barWidth = 0.35;
+                for (int i = 0; i < this.Pipelines.Count; i++)
+                {
+                    var pl = this.Pipelines[i];
+
+                    // 売上の棒
+                    salesSeries.Items.Add(new OxyPlot.Series.RectangleBarItem(
+                        i - barWidth / 2, 0, i + barWidth / 2, Convert.ToDouble(pl.CaseCount)));
+
+                }
+
+                newPlotModel.Series.Add(salesSeries);
+
+                // 凡例を表示
+                newPlotModel.IsLegendVisible = true;
+
+                // プロパティに代入
+                PlotModel = newPlotModel;
+                PlotModel.InvalidatePlot(true);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"PlotChart Error: {ex.Message}");
+                PlotModel = new OxyPlot.PlotModel { Title = "エラーが発生しました" };
+            }
         }
 
         public bool IsNavigationTarget(NavigationContext navigationContext)
