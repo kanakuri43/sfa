@@ -4,9 +4,10 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Regions;
-using Split.Models;
 using sfa.Models;
+using Split.Models;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -33,6 +34,7 @@ namespace Split.ViewModels
         private ObservableCollection<ExtendedCaseInfo> _inactiveCases;
         private ObservableCollection<Case> _customersHistories;
         private ObservableCollection<Pipeline> _pipelines;
+        private ObservableCollection<Case> _selectedCases;
 
         private Section _selectedSection;
         private Employee _selectedEmployee;
@@ -225,12 +227,18 @@ namespace Split.ViewModels
             get { return _profitShortfall; }
             set { SetProperty(ref _profitShortfall, value); }
         }
+        public ObservableCollection<Case> SelectedCases
+        {
+            get { return _selectedCases; }
+            set { SetProperty(ref _selectedCases, value); }
+        }
 
         public DelegateCommand YearSelectionChanged { get; }
         public DelegateCommand MonthSelectionChanged { get; }
         public DelegateCommand SectionSelectionChanged { get; }
         public DelegateCommand EmployeeSelectionChanged { get; }
         public DelegateCommand SelectedProgressLevelChanged { get; }
+        public DelegateCommand<IList> ActiveCaseSelectionChanged { get; }
 
         public DashboardViewModel(IRegionManager regionManager)
         {
@@ -240,6 +248,9 @@ namespace Split.ViewModels
             SectionSelectionChanged = new DelegateCommand(SectionSelectionChangedExecute);
             EmployeeSelectionChanged = new DelegateCommand(EmployeeSelectionChangedExecute);
             SelectedProgressLevelChanged = new DelegateCommand(SelectedProgressLevelChangedExecute);
+            ActiveCaseSelectionChanged = new DelegateCommand<IList>(ActiveCaseSelectionChangedExecute);
+
+            SelectedCases = new ObservableCollection<Case>();
 
             // 年リスト
             int currentYear = DateTime.Now.Year;
@@ -644,6 +655,19 @@ namespace Split.ViewModels
             }
 
             UpdateScreen();
+        }
+
+        private void ActiveCaseSelectionChangedExecute(IList selectedItems)
+        {
+            // 選択された社員リストを更新
+            SelectedCases.Clear();
+            if (selectedItems != null)
+            {
+                foreach (Case c in selectedItems)
+                {
+                    SelectedCases.Add(c);
+                }
+            }
         }
 
         public bool IsNavigationTarget(NavigationContext navigationContext)

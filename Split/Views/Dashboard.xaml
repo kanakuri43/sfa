@@ -440,8 +440,10 @@
                     </GridView>
                 </ListView.View>
                 <i:Interaction.Triggers>
-                    <i:EventTrigger EventName="MouseDoubleClick">
-                        <prism:InvokeCommandAction Command="{Binding OrderDoubleClickCommand}"/>
+                    <i:EventTrigger EventName="SelectionChanged">
+                        <prism:InvokeCommandAction 
+                            Command="{Binding ActiveCaseSelectionChanged}" 
+                            CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ListBox}, Path=SelectedItems}"/>
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
             </ListView>
