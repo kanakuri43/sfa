@@ -47,12 +47,14 @@ namespace Split.ViewModels
         private float _salesProgressRate;
         private float _salesForecastProgressRate;
         private float _salesPreviousRate;
+        private decimal _salesForcast;
 
         private decimal _currentProfitTarget;
         private decimal _profitShortfall;
         private float _profitProgressRate;
         private float _profitForecastProgressRate;
         private float _profitPreviousRate;
+        private decimal _profitForcast;
 
         private string _selectedSectionCode;
 
@@ -222,11 +224,22 @@ namespace Split.ViewModels
             get { return _salesShortfall; }
             set { SetProperty(ref _salesShortfall, value); }
         }
+        public decimal SalesForcast
+        {
+            get { return _salesForcast; }
+            set { SetProperty(ref _salesForcast, value); }
+        }
         public decimal ProfitShortfall
         {
             get { return _profitShortfall; }
             set { SetProperty(ref _profitShortfall, value); }
         }
+        public decimal ProfitForcast
+        {
+            get { return _profitForcast; }
+            set { SetProperty(ref _profitForcast, value); }
+        }
+
         public ObservableCollection<Case> SelectedCases
         {
             get { return _selectedCases; }
@@ -374,8 +387,10 @@ namespace Split.ViewModels
                             F.社員コード AS EmployeeCode
                             , ISNULL(F.FinishedSales, 0) AS FinishedSales
                             , ISNULL(F.FinishedProfit, 0) AS FinishedProfit
-                            , ISNULL(U.UnfinishedSales, 0) AS UnfinishedSales
-                            , ISNULL(U.UnfinishedProfit, 0) AS UnfinishedProfit 
+                            --, ISNULL(U.UnfinishedSales, 0) AS UnfinishedSales
+                            --, ISNULL(U.UnfinishedProfit, 0) AS UnfinishedProfit 
+                            , CONVERT(DECIMAL, 1234) AS UnfinishedSales
+                            , CONVERT(DECIMAL, 123) AS UnfinishedProfit 
                         FROM
                             ( 
                                 SELECT
@@ -465,91 +480,58 @@ namespace Split.ViewModels
                     }
                 }
 
-                // 案件リスト
+                // 案件リスト（1回のSQLで全てのデータを取得）
                 sql = @"
-                        SELECT
-                            D物件.*
-                            , C.連番 AS CustomerCode
-                            , C.名称 AS CustomerName
-                            , 記号 AS Symbol
-                            , 物件確度区分 AS ProgressLevel
-                            , {0} AS ChargeEmployeeCode
-                        FROM
-                            D物件 
-                            INNER JOIN D物件担当 
-                                ON D物件担当.物件連番 = D物件.連番 
-                                AND D物件担当.担当区分 = 1 
-                            INNER JOIN M物件確度 
-                                ON M物件確度.コード = D物件.物件確度 
-                                AND M物件確度.物件確度区分 >= {2}
-                                AND M物件確度.物件確度区分 <= {3}
-							INNER JOIN D物件顧客 CC
-							    ON D物件.連番 = CC.物件連番
-							INNER JOIN D顧客 C
-							    ON CC.顧客連番 = C.連番
-                        WHERE
-                            D物件担当.社員コード = {0} 
-                            AND D物件.受注月度 = {1} 
-                            AND D物件.削除区分 = 0 
-                        ";
-                var ac = context.Database.SqlQueryRaw<ExtendedCaseInfo>(
-                                    sql,
-                                    this.SelectedEmployee.Code,
-                                    this.SelectedYear * 100 + this.SelectedMonth,
-                                    this.ProgressLevelMin.Level,
-                                    this.ProgressLevelMax.Level
-                                ).ToList();
-                if (ac == null)
+                    SELECT
+                        D物件.*
+                        , C.連番 AS CustomerCode
+                        , C.名称 AS CustomerName
+                        , 記号 AS Symbol
+                        , 物件確度区分 AS ProgressLevel
+                        , {0} AS ChargeEmployeeCode
+                    FROM
+                        D物件 
+                        INNER JOIN D物件担当 
+                            ON D物件担当.物件連番 = D物件.連番 
+                            AND D物件担当.担当区分 = 1 
+                        INNER JOIN M物件確度 
+                            ON M物件確度.コード = D物件.物件確度 
+                        INNER JOIN D物件顧客 CC
+                            ON D物件.連番 = CC.物件連番
+                        INNER JOIN D顧客 C
+                            ON CC.顧客連番 = C.連番
+                    WHERE
+                        D物件担当.社員コード = {0} 
+                        AND D物件.受注月度 = {1} 
+                        AND D物件.削除区分 = 0 
+                    ";
+
+                var allCases = context.Database.SqlQueryRaw<ExtendedCaseInfo>(
+                    sql,
+                    this.SelectedEmployee.Code,
+                    this.SelectedYear * 100 + this.SelectedMonth
+                ).ToList();
+
+                if (allCases == null || !allCases.Any())
                 {
+                    this.ActiveCases = new ObservableCollection<ExtendedCaseInfo>();
+                    this.InactiveCases = new ObservableCollection<ExtendedCaseInfo>();
                     return;
-                }
-                else
-                {
-                    this.ActiveCases = new ObservableCollection<ExtendedCaseInfo>(ac.OrderByDescending(ac => ac.ProgressLevel));
-                    ;
                 }
 
-                sql = @"
-                        SELECT
-                            D物件.*
-                            , C.連番 AS CustomerCode
-                            , C.名称 AS CustomerName
-                            , 記号 AS Symbol
-                            , 物件確度区分 AS ProgressLevel
-                            , {0} AS ChargeEmployeeCode
-                        FROM
-                            D物件 
-                            INNER JOIN D物件担当 
-                                ON D物件担当.物件連番 = D物件.連番 
-                                AND D物件担当.担当区分 = 1 
-                            INNER JOIN M物件確度 
-                                ON M物件確度.コード = D物件.物件確度 
-                                AND M物件確度.物件確度区分 >= 30
-							INNER JOIN D物件顧客 CC
-							    ON D物件.連番 = CC.物件連番
-							INNER JOIN D顧客 C
-							    ON CC.顧客連番 = C.連番
-                        WHERE
-                            D物件担当.社員コード = {0} 
-                            AND D物件.受注月度 = {1} 
-                            AND D物件.削除区分 = 0 
-                        ";
-                var ic = context.Database.SqlQueryRaw<ExtendedCaseInfo>(
-                                    sql,
-                                    this.SelectedEmployee.Code,
-                                    this.SelectedYear * 100 + this.SelectedMonth,
-                                    this.ProgressLevelMin.Level,
-                                    this.ProgressLevelMax.Level
-                                ).ToList();
-                if (ic == null)
-                {
-                    return;
-                }
-                else
-                {
-                    this.InactiveCases = new ObservableCollection<ExtendedCaseInfo>(ic.OrderByDescending(ic => ic.ProgressLevel));
-                    ;
-                }
+                // LINQで条件に応じてActiveCasesとInactiveCasesに分ける
+                var activeCases = allCases
+                    .Where(c => c.ProgressLevel >= this.ProgressLevelMin.Level &&
+                                c.ProgressLevel <= this.ProgressLevelMax.Level)
+                    .OrderByDescending(c => c.ProgressLevel)
+                    .ToList();
+                this.ActiveCases = new ObservableCollection<ExtendedCaseInfo>(activeCases);
+
+                var inactiveCases = allCases
+                    .Where(c => c.ProgressLevel >= 30)
+                    .OrderByDescending(c => c.ProgressLevel)
+                    .ToList();
+                this.InactiveCases = new ObservableCollection<ExtendedCaseInfo>(inactiveCases);
 
                 // パイプライン
                 sql = @"
@@ -600,7 +582,6 @@ namespace Split.ViewModels
                 else
                 {
                     this.Pipelines = new ObservableCollection<Pipeline>(p.OrderBy(p => p.Level));
-                    ;
                 }
 
             }
@@ -668,6 +649,12 @@ namespace Split.ViewModels
                     SelectedCases.Add(c);
                 }
             }
+            SalesForcast = SelectedCases.Sum(c => c.SalesPrice);
+            ProfitForcast = SelectedCases.Sum(c => c.ProfitPrice);
+
+            SalesForecastProgressRate = ((float)((LatestTotals[0].FinishedSales + SalesForcast) / CurrentSalesTarget) * 100);
+            ProfitForecastProgressRate = ((float)((LatestTotals[0].FinishedProfit + ProfitForcast) / CurrentProfitTarget) * 100);
+
         }
 
         public bool IsNavigationTarget(NavigationContext navigationContext)

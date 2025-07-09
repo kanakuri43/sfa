@@ -16,24 +16,15 @@ namespace sfa.Models
         public byte State { get; set; }
         [Column("名称")]
         public string CaseName { get; set; }
-        //public int CustomerCode { get; set; }
-        //public string CustomerName { get; set; }
 
         [Column("受注月度")]
         public int OrderYearMonth { get; set; }
         [Column("売上月度")]
         public int SalesYearMonth { get; set; }
 
-
         [Column("売上金額")]
         public decimal SalesPrice { get; set; }
         [Column("粗利金額")]
         public decimal ProfitPrice { get; set; }
-        //[Column("記号")]
-        //public string Symbol { get; set; }
-        //[Column("物件確度区分")]
-        //public byte Level { get; set; }
-
-
     }
 }

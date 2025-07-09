@@ -230,7 +230,7 @@
                 <TextBlock Grid.Row="4" Grid.Column="1" 
                                        VerticalAlignment="Center"
                                        TextAlignment="Right"
-                                       Text="{Binding LatestTotals[0].TotalSales ,StringFormat={}{0:N0}}"/>
+                                       Text="{Binding SalesForcast ,StringFormat={}{0:N0}}"/>
                 <TextBlock Grid.Row="4" Grid.Column="2" 
                                        VerticalAlignment="Center"
                                        TextAlignment="Right"
@@ -322,7 +322,7 @@
                 <TextBlock Grid.Row="4" Grid.Column="1" 
                                        VerticalAlignment="Center"
                                        TextAlignment="Right"
-                                       Text="{Binding LatestTotals[0].TotalProfit ,StringFormat={}{0:N0}}"/>
+                                       Text="{Binding ProfitForcast ,StringFormat={}{0:N0}}"/>
                 <TextBlock Grid.Row="4" Grid.Column="2" 
                                     TextAlignment="Right"
                                     VerticalAlignment="Center"

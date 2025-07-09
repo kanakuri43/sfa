@@ -14,17 +14,17 @@ namespace Split.Models
         public decimal UnfinishedSales { get; set; }
         public decimal UnfinishedProfit { get; set; }
 
-        public decimal TotalSales
+        public decimal ForcastIncludedSales
         {
             get { return FinishedSales + UnfinishedSales; }
         }
-        public decimal TotalProfit
+        public decimal ForcastIncludedProfit
         {
             get { return FinishedProfit + UnfinishedProfit; }
         }
         public decimal GrossMarginRate
         {
-            get { return (TotalProfit / TotalSales) * 100; }
+            get { return (ForcastIncludedProfit / ForcastIncludedSales) * 100; }
         }
 
     }
