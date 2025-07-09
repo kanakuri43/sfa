@@ -1,6 +1,7 @@
 ﻿using ControlzEx.Standard;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using OxyPlot;
 using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Regions;
@@ -14,6 +15,7 @@ using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
+using System.Windows;
 
 namespace Split.ViewModels
 {
@@ -55,10 +57,9 @@ namespace Split.ViewModels
         private float _profitForecastProgressRate;
         private float _profitPreviousRate;
         private decimal _profitForcast;
-
         private string _selectedSectionCode;
-
         private CollectionView _resultCollectionView;
+        private OxyPlot.PlotModel _plotModel;
 
 
         public ObservableCollection<int> Months
@@ -244,6 +245,14 @@ namespace Split.ViewModels
         {
             get { return _selectedCases; }
             set { SetProperty(ref _selectedCases, value); }
+        }
+        public OxyPlot.PlotModel PlotModel
+        {
+            get => _plotModel;
+            set
+            {
+                SetProperty(ref _plotModel, value); // BindableBaseのSetPropertyを使用
+            }
         }
 
         public DelegateCommand YearSelectionChanged { get; }
@@ -577,6 +586,7 @@ namespace Split.ViewModels
                 {
                     this.Pipelines = new ObservableCollection<Pipeline>(p.OrderBy(p => p.Level));
                 }
+                PlotChart();
 
             }
         }
@@ -649,6 +659,92 @@ namespace Split.ViewModels
             SalesForecastProgressRate = ((float)((LatestTotals[0].FinishedSales + SalesForcast) / CurrentSalesTarget) * 100);
             ProfitForecastProgressRate = ((float)((LatestTotals[0].FinishedProfit + ProfitForcast) / CurrentProfitTarget) * 100);
 
+        }
+        private void PlotChart()
+        {
+            if (this.Pipelines == null || !this.Pipelines.Any())
+            {
+                return;
+            }
+
+            try
+            {
+                var newPlotModel = new OxyPlot.PlotModel();
+
+                // カテゴリ軸（X軸）を設定 - 年度
+                var categoryAxis = new OxyPlot.Axes.CategoryAxis
+                {
+                    Position = OxyPlot.Axes.AxisPosition.Bottom,
+                    ItemsSource = this.Pipelines.Select(p => p.Name.ToString()).ToList()
+                };
+                newPlotModel.Axes.Add(categoryAxis);
+
+                // 値軸（Y軸）を設定 - 売上・利益
+                var yAxis = new OxyPlot.Axes.LinearAxis()
+                {
+                    Position = OxyPlot.Axes.AxisPosition.Left,
+                    StringFormat = "N0",
+                    Minimum = 0
+                };
+                newPlotModel.Axes.Add(yAxis);
+
+                // MahApps.Metroのテーマカラーを取得
+                var accentBrush = Application.Current.Resources["MahApps.Brushes.Accent"] as SolidColorBrush;
+                var accent2Brush = Application.Current.Resources["MahApps.Brushes.Accent2"] as SolidColorBrush;
+
+                // OxyColorに変換
+                var accentColor = accentBrush != null ?
+                    OxyColor.FromArgb(accentBrush.Color.A, accentBrush.Color.R, accentBrush.Color.G, accentBrush.Color.B) :
+                    OxyColors.Blue;
+
+                var accent2Color = accent2Brush != null ?
+                    OxyColor.FromArgb(accent2Brush.Color.A, accent2Brush.Color.R, accent2Brush.Color.G, accent2Brush.Color.B) :
+                    OxyColors.Red;
+
+                // 売上の縦棒グラフシリーズ
+                var salesSeries = new OxyPlot.Series.RectangleBarSeries()
+                {
+                    Title = "売上",
+                    FillColor = accent2Color,
+                    StrokeColor = accent2Color,
+                    StrokeThickness = 1
+                };
+
+                // 利益の縦棒グラフシリーズ
+                var profitSeries = new OxyPlot.Series.RectangleBarSeries()
+                {
+                    Title = "利益",
+                    FillColor = accentColor,
+                    StrokeColor = accentColor,
+                    StrokeThickness = 1
+                };
+
+                // データポイントを追加
+                double barWidth = 0.35;
+                for (int i = 0; i < this.Pipelines.Count; i++)
+                {
+                    var pl = this.Pipelines[i];
+
+                    // 売上の棒
+                    salesSeries.Items.Add(new OxyPlot.Series.RectangleBarItem(
+                        i - barWidth / 2, 0, i + barWidth / 2, Convert.ToDouble(pl.CaseCount)));
+
+                }
+
+                newPlotModel.Series.Add(salesSeries);
+
+                // 凡例を表示
+                newPlotModel.IsLegendVisible = true;
+
+                // プロパティに代入
+                PlotModel = newPlotModel;
+                PlotModel.InvalidatePlot(true);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"PlotChart Error: {ex.Message}");
+                PlotModel = new OxyPlot.PlotModel { Title = "エラーが発生しました" };
+            }
         }
 
         public bool IsNavigationTarget(NavigationContext navigationContext)
