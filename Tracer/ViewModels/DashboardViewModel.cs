@@ -9,7 +9,6 @@ using sfa.Models;
 using Microsoft.EntityFrameworkCore;
 using Tracer.Models;
 using System.Windows.Data;
-using sfa.Models;
 
 namespace Tracer.ViewModels
 {
@@ -31,6 +30,7 @@ namespace Tracer.ViewModels
         private ObservableCollection<ExtendedCaseInfo> _cases;
         private ObservableCollection<ExtendedCaseRevision> _caseRevisions;
         private ObservableCollection<Pipeline> _pipelines;
+        private string _selectedSectionCode;
 
         public ObservableCollection<Section> Sections
         {
@@ -103,6 +103,11 @@ namespace Tracer.ViewModels
             get { return _pipelines; }
             set { SetProperty(ref _pipelines, value); }
         }
+        public string SelectedSectionCode
+        {
+            get { return _selectedSectionCode; }
+            set { SetProperty(ref _selectedSectionCode, value); }
+        }
 
         public DelegateCommand SectionSelectionChanged { get; }
         public DelegateCommand EmployeeSelectionChanged { get; }
@@ -120,10 +125,44 @@ namespace Tracer.ViewModels
             using (var context = new AppDbContext())
             {
                 // 部署リスト
-                Sections = new ObservableCollection<Section>(
-                            context.Sections.Where(s => s.State == 0).ToList()
-                        );
+                var sql = @"
+                    SELECT
+                        L3.コード
+                        , CASE 
+                            WHEN L3.部門レベル = 3 
+                                THEN L1.略称 + '／' + L2.略称 + '／' + L3.略称 
+                            WHEN L3.部門レベル = 2 
+                                THEN L1.略称 + '／' + L2.略称 
+                            ELSE L3.略称 
+                            END AS 名称 
+                        , L3.削除区分
+                    FROM
+                        M部門 L3 
+                        LEFT JOIN M部門 L1 
+                            ON L3.事業部コード = L1.事業部コード 
+                            AND L3.コード - L3.コード % 10000 = L1.コード 
+                        LEFT JOIN M部門 L2 
+                            ON L3.事業部コード = L2.事業部コード 
+                            AND L3.コード - L3.コード % 100 = L2.コード 
+                    WHERE
+                        L3.削除区分 = 0
+                    ORDER BY
+                        L3.コード
+                        ";
+                var s = context.Database.SqlQueryRaw<Section>(sql).ToList();
+                if (s == null)
+                {
+                    return;
+                }
+                else
+                {
+                    this.Sections = new ObservableCollection<Section>(s);
+                }
                 this.SelectedSection = context.Sections.FirstOrDefault(s => s.Code == 21130);
+                if (this.SelectedSection != null)
+                {
+                    this.SelectedSectionCode = this.SelectedSection.Code.ToString();
+                }
 
                 // 物権確度
                 this.ProgressLevels = new ObservableCollection<ProgressLevel>(
@@ -151,12 +190,16 @@ namespace Tracer.ViewModels
 
         private void FetchEmployeeList()
         {
-
             using (var context = new AppDbContext())
             {
+                string sectionCodeStr = this.SelectedSection.Code.ToString("D5");
+                string searchPrefix = sectionCodeStr.TrimEnd('0');
+
                 Employees = new ObservableCollection<Employee>(
                     context.Employees
-                        .Where(e => e.SectionCode == this.SelectedSection.Code && e.State == 0)
+                        .Where(e => e.State == 0)
+                        .AsEnumerable()
+                        .Where(e => e.SectionCode.ToString("D5").StartsWith(searchPrefix))
                         .ToList()
                 );
             }

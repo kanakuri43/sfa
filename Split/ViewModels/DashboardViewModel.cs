@@ -277,12 +277,6 @@ namespace Split.ViewModels
             using (var context = new AppDbContext())
             {
                 // 部署リスト
-                Sections = new ObservableCollection<Section>(
-                            context.Sections.Where(s => s.State == 0).ToList()
-                        );
-                this.SelectedSection = context.Sections.FirstOrDefault(s => s.Code == 21130);
-
-                // 部署リスト
                 var sql = @"
                     SELECT
                         L3.コード

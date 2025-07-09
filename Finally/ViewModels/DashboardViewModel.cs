@@ -166,7 +166,6 @@ namespace Finally.ViewModels
             // 年リスト
             int currentYear = DateTime.Now.Year;
             Years = new ObservableCollection<int>(Enumerable.Range(currentYear - 1, 3));
-            //this.SelectedYear = currentYear;
 
             // 月リスト
             Months = new ObservableCollection<int>(Enumerable.Range(1, 12));
