@@ -374,6 +374,7 @@
 
                 <ListView.View>
                     <GridView>
+                        <GridViewColumn Header="受注月" DisplayMemberBinding="{Binding OrderYearMonth}" Width="50"/>
                         <GridViewColumn Header="確度" DisplayMemberBinding="{Binding Symbol}" Width="35"/>
                         <GridViewColumn Header="顧客" DisplayMemberBinding="{Binding CustomerName}" Width="170"/>
                         <GridViewColumn Header="案件" DisplayMemberBinding="{Binding CaseName}" Width="170"/>
@@ -434,6 +435,7 @@
 
                 <ListView.View>
                     <GridView>
+                        <GridViewColumn Header="受注月" DisplayMemberBinding="{Binding OrderYearMonth}" Width="50"/>
                         <GridViewColumn Header="確度" DisplayMemberBinding="{Binding Symbol}" Width="35"/>
                         <GridViewColumn Header="顧客" DisplayMemberBinding="{Binding CustomerName}" Width="170"/>
                         <GridViewColumn Header="案件" DisplayMemberBinding="{Binding CaseName}" Width="170"/>

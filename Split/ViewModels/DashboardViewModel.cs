@@ -505,7 +505,7 @@ namespace Split.ViewModels
                             ON CC.顧客連番 = C.連番
                     WHERE
                         D物件担当.社員コード = {0} 
-                        AND D物件.受注月度 = {1} 
+                        AND D物件.受注月度 >= {1} 
                         AND D物件.削除区分 = 0 
                     ";
 
@@ -522,7 +522,7 @@ namespace Split.ViewModels
                     return;
                 }
 
-                // LINQで条件に応じてActiveCasesとInactiveCasesに分ける
+                // ActiveCases
                 var activeCases = allCases
                     .Where(c => c.ProgressLevel >= this.ProgressLevelMin.Level &&
                                 c.ProgressLevel <= this.ProgressLevelMax.Level)
@@ -530,8 +530,10 @@ namespace Split.ViewModels
                     .ToList();
                 this.ActiveCases = new ObservableCollection<ExtendedCaseInfo>(activeCases);
 
+                // InactiveCases
                 var inactiveCases = allCases
-                    .Where(c => c.ProgressLevel >= 30)
+                    .Where(c => c.ProgressLevel >= 30 &&
+                                c.OrderYearMonth == this.SelectedYear * 100 + this.SelectedMonth)
                     .OrderByDescending(c => c.ProgressLevel)
                     .ToList();
                 this.InactiveCases = new ObservableCollection<ExtendedCaseInfo>(inactiveCases);
