@@ -416,13 +416,10 @@
                            FontWeight="Bold"
                            FontSize="16"
                            Text="Active"/>
-                <Button Grid.Column="1"
-                        Content="ALL" 
-                        Margin="0,0,4,0"
-                        Style="{DynamicResource MahApps.Styles.Button.Flat}"/>
                 <Button Grid.Column="2"
-                        Content="CLEAR" 
+                        Content="AC" 
                         Margin="4,0,0,0"
+                        Command="{Binding ActiveCaseSelectionAllClearCommand}"
                         Style="{DynamicResource MahApps.Styles.Button.Flat}"/>
 
             </Grid>
