@@ -226,7 +226,6 @@
                            Visibility="{Binding IsSalesCompleted, Converter={StaticResource BooleanToVisibilityConverter}}"
                            Text="Complete"/>
 
-
                 <TextBlock Grid.Row="4" Grid.Column="0" 
                                        VerticalAlignment="Center"
                                        Text="試算"/>
@@ -243,6 +242,12 @@
                                                        Background="LightGray"
                                                        Minimum="0" Maximum="100"
                                                        Value="{Binding SalesForecastProgressRate}" />
+                <TextBlock Grid.Row="4" Grid.Column="3" 
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Center"
+                           Foreground="White"
+                           Visibility="{Binding IsSalesForecastCompleted, Converter={StaticResource BooleanToVisibilityConverter}}"
+                           Text="Complete"/>
 
                 <TextBlock Grid.Row="3" Grid.Column="0" 
                                        VerticalAlignment="Center"
@@ -334,6 +339,12 @@
                                                        Background="LightGray"
                                                        Minimum="0" Maximum="100"
                                                        Value="{Binding ProfitForecastProgressRate}" />
+                <TextBlock Grid.Row="4" Grid.Column="3"             
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Center"
+                           Foreground="White"
+                           Visibility="{Binding IsProfitForecastCompleted, Converter={StaticResource BooleanToVisibilityConverter}}"
+                           Text="Complete"/>
 
 
             </Grid>
@@ -416,6 +427,11 @@
                            FontWeight="Bold"
                            FontSize="16"
                            Text="Active"/>
+                <Button Grid.Column="1"
+                        Content="AUTO" 
+                        Margin="4,0,0,0"
+                        Command="{Binding ActiveCaseSelectionAllClearCommand}"
+                        Style="{DynamicResource MahApps.Styles.Button.Flat}"/>
                 <Button Grid.Column="2"
                         Content="AC" 
                         Margin="4,0,0,0"

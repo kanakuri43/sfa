@@ -142,7 +142,11 @@ namespace Split.ViewModels
         public float SalesForecastProgressRate
         {
             get { return _salesForecastProgressRate; }
-            set { SetProperty(ref _salesForecastProgressRate, value); }
+            set 
+            { 
+                SetProperty(ref _salesForecastProgressRate, value);
+                RaisePropertyChanged(nameof(IsSalesForecastCompleted));
+            }
         }
         public float SalesPreviousRate
         {
@@ -166,7 +170,11 @@ namespace Split.ViewModels
         public float ProfitForecastProgressRate
         {
             get { return _profitForecastProgressRate; }
-            set { SetProperty(ref _profitForecastProgressRate, value); }
+            set 
+            { 
+                SetProperty(ref _profitForecastProgressRate, value);
+                RaisePropertyChanged(nameof(IsProfitForecastCompleted));
+            }
         }
         public float ProfitPreviousRate
         {
@@ -218,6 +226,14 @@ namespace Split.ViewModels
         public bool IsProfitCompleted
         {
             get { return ProfitProgressRate >= 100; }
+        }
+        public bool IsSalesForecastCompleted
+        {
+            get { return SalesForecastProgressRate >= 100; }
+        }
+        public bool IsProfitForecastCompleted
+        {
+            get { return ProfitForecastProgressRate >= 100; }
         }
 
         public decimal SalesShortfall
