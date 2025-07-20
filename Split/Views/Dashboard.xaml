@@ -430,7 +430,7 @@
                 <Button Grid.Column="1"
                         Content="AUTO" 
                         Margin="4,0,0,0"
-                        Command="{Binding ActiveCaseSelectionAllClearCommand}"
+                        Command="{Binding AutoSelectActiveCaseCommand}"
                         Style="{DynamicResource MahApps.Styles.Button.Flat}"/>
                 <Button Grid.Column="2"
                         Content="AC" 

@@ -278,6 +278,7 @@ namespace Split.ViewModels
         public DelegateCommand SelectedProgressLevelChanged { get; }
         public DelegateCommand<IList> ActiveCaseSelectionChanged { get; }
         public DelegateCommand ActiveCaseSelectionAllClearCommand { get; }
+        public DelegateCommand AutoSelectActiveCaseCommand { get; }
         public DashboardViewModel(IRegionManager regionManager)
         {
             _regionManager = regionManager;
@@ -288,6 +289,7 @@ namespace Split.ViewModels
             SelectedProgressLevelChanged = new DelegateCommand(SelectedProgressLevelChangedExecute);
             ActiveCaseSelectionChanged = new DelegateCommand<IList>(ActiveCaseSelectionChangedExecute);
             ActiveCaseSelectionAllClearCommand = new DelegateCommand(ActiveCaseSelectionAllClearCommandExecute);
+            AutoSelectActiveCaseCommand = new DelegateCommand(AutoSelectActiveCaseCommandExecute);
 
             SelectedCases = new ObservableCollection<Case>();
 
@@ -702,6 +704,10 @@ namespace Split.ViewModels
         private void ActiveCaseSelectionAllClearCommandExecute()
         {
             FetchCases();
+        }
+        private void AutoSelectActiveCaseCommandExecute()
+        {
+
         }
 
         private void PlotChart()
