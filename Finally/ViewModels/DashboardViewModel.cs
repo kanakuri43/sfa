@@ -225,7 +225,7 @@ namespace Finally.ViewModels
                 {
                     this.Sections = new ObservableCollection<Section>(s);
                 }
-                this.SelectedSection = context.Sections.FirstOrDefault(s => s.Code == 21130);
+                this.SelectedSection = context.Sections.FirstOrDefault(s => s.Code == 11010);
                 if (this.SelectedSection != null)
                 {
                     this.SelectedSectionCode = this.SelectedSection.Code.ToString();
@@ -327,13 +327,15 @@ namespace Finally.ViewModels
                                 , ISNULL(TAR.売上目標, 0) / 1000 AS TargetSales
                                 , ISNULL(TAR.粗利目標, 0) / 1000 AS TargetProfit
                                 , 0 AS EmployeeCode
-                                , ISNULL(S.FinishedSales, 0) / 1000 AS FinishedSales
-                                , ISNULL(S.FinishedProfit, 0) / 1000 AS FinishedProfit 
+                                , (CASE WHEN (ISNULL(CL.ClosedSales, 0) != 0) THEN  ISNULL(CL.ClosedSales, 0) ELSE ISNULL(S.FinishedSales, 0) END) / 1000 AS FinishedSales
+                                , (CASE WHEN (ISNULL(CL.ClosedProfit, 0) != 0) THEN  ISNULL(CL.ClosedProfit, 0) ELSE ISNULL(S.FinishedProfit, 0) END) / 1000 AS FinishedProfit
                                 , ISNULL(U.UnfinishedSales, 0) / 1000 AS UnfinishedSales
                                 , ISNULL(U.UnfinishedProfit, 0) / 1000 AS UnfinishedProfit 
-                                , 0 AS MiscIncome 
+                                --, 0 AS MiscIncome 
                                 , (CASE WHEN ISNULL(U.UnfinishedSales, 0) = 0 THEN '' ELSE '*' END) AS HasUnfinishedSales
                                 , (CASE WHEN ISNULL(U.UnfinishedProfit, 0) = 0 THEN '' ELSE '*' END) AS HasUnfinishedProfit
+                                , ISNULL(COST.Cost, 0) / 1000 AS Cost 
+                                , ISNULL(NOP.NonOperationProfit, 0) / 1000 AS NonOperationProfit 
                             FROM
                                 (select 月度 FROM Mカレンダ WHERE 期 = {this.Period} GROUP BY 月度) CAL 
                                 LEFT JOIN ( 
@@ -352,6 +354,19 @@ namespace Finally.ViewModels
                                         月度
                                 ) AS TAR 
                                     ON CAL.月度 = TAR.月度 
+                                LEFT JOIN ( 
+                                    SELECT
+                                        月度
+                                        , ISNULL(SUM(売上実績), 0) AS ClosedSales
+                                        , ISNULL(SUM(粗利実績), 0) AS ClosedProfit
+                                    FROM
+                                        S進捗実績 
+                                    WHERE
+                                        社員コード IN ({employeeCodes}) 
+                                    GROUP BY
+                                        月度
+                                ) AS CL
+                                    ON CAL.月度 = CL.月度 
                                 LEFT JOIN ( 
                                     SELECT
                                         D物件.受注月度
@@ -393,6 +408,30 @@ namespace Finally.ViewModels
                                         D物件.受注月度
                                 ) U 
                                     ON CAL.月度 = U.受注月度
+                                LEFT JOIN ( 
+                                    SELECT
+                                        月度
+                                        , ISNULL(SUM(実績経費), 0) AS Cost
+                                    FROM
+                                        S進捗経費 
+                                    WHERE
+                                        社員コード IN ({employeeCodes})
+                                    GROUP BY
+                                        月度
+                                ) AS COST
+                                    ON CAL.月度 = COST.月度 
+                                LEFT JOIN ( 
+                                    SELECT
+                                        月度
+                                        , ISNULL(SUM(実績営業利益), 0) AS NonOperationProfit
+                                    FROM
+                                        S進捗営業利益 
+                                    WHERE
+                                        社員コード IN ({employeeCodes})
+                                    GROUP BY
+                                        月度
+                                ) AS NOP
+                                    ON CAL.月度 = NOP.月度 
                             ORDER BY CAL.月度
                         ";
 
@@ -414,7 +453,9 @@ namespace Finally.ViewModels
                         FinishedSales = MonthlyTotals.Sum(s => s.FinishedSales),
                         FinishedProfit = MonthlyTotals.Sum(s => s.FinishedProfit),
                         UnfinishedSales = MonthlyTotals.Sum(s => s.UnfinishedSales),
-                        UnfinishedProfit = MonthlyTotals.Sum(s => s.UnfinishedProfit)
+                        UnfinishedProfit = MonthlyTotals.Sum(s => s.UnfinishedProfit),
+                        Cost = MonthlyTotals.Sum(s => s.Cost),
+                        NonOperationProfit = MonthlyTotals.Sum(s => s.NonOperationProfit),
                     };
                     this.YearlyTotals = new ObservableCollection<MonthlyTotal> { yt };
                 }

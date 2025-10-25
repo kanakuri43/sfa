@@ -256,7 +256,7 @@
                         <GridViewColumn Header="経費" Width="80">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding MiscIncome ,StringFormat={}{0:#,0}}" 
+                                    <TextBlock Text="{Binding Cost ,StringFormat={}{0:#,0}}" 
                                                HorizontalAlignment="Right" />
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
@@ -264,7 +264,7 @@
                         <GridViewColumn Header="営業利益" Width="80">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding MiscIncome ,StringFormat={}{0:#,0}}" 
+                                    <TextBlock Text="{Binding OperatingProfit ,StringFormat={}{0:#,0}}" 
                                                HorizontalAlignment="Right" />
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
@@ -272,7 +272,7 @@
                         <GridViewColumn Header="営業外" Width="80">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding MiscIncome ,StringFormat={}{0:#,0}}" 
+                                    <TextBlock Text="{Binding NonOperationProfit ,StringFormat={}{0:#,0}}" 
                                                HorizontalAlignment="Right" />
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
@@ -280,7 +280,7 @@
                         <GridViewColumn Header="経常利益" Width="80">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding MiscIncome ,StringFormat={}{0:#,0}}" 
+                                    <TextBlock Text="{Binding OrdinaryProfit ,StringFormat={}{0:#,0}}" 
                                                HorizontalAlignment="Right" />
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
@@ -370,7 +370,7 @@
                         <GridViewColumn Header="経費" Width="80">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding MiscIncome ,StringFormat={}{0:#,0}}" 
+                                    <TextBlock Text="{Binding Cost ,StringFormat={}{0:#,0}}" 
                                                HorizontalAlignment="Right" />
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
@@ -378,7 +378,7 @@
                         <GridViewColumn Header="営業利益" Width="80">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding MiscIncome ,StringFormat={}{0:#,0}}" 
+                                    <TextBlock Text="{Binding OperatingProfit ,StringFormat={}{0:#,0}}" 
                                                HorizontalAlignment="Right" />
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
@@ -386,7 +386,7 @@
                         <GridViewColumn Header="営業外" Width="80">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding MiscIncome ,StringFormat={}{0:#,0}}" 
+                                    <TextBlock Text="{Binding NonOperationProfit ,StringFormat={}{0:#,0}}" 
                                                HorizontalAlignment="Right" />
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
@@ -394,7 +394,7 @@
                         <GridViewColumn Header="経常利益" Width="80">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding MiscIncome ,StringFormat={}{0:#,0}}" 
+                                    <TextBlock Text="{Binding OrdinaryProfit ,StringFormat={}{0:#,0}}" 
                                                HorizontalAlignment="Right" />
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>

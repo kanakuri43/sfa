@@ -19,6 +19,14 @@ namespace Finally.Models
         public decimal UnfinishedProfit { get; set; }
         public string HasUnfinishedSales { get; set; }
         public string HasUnfinishedProfit { get; set; }
+
+        // 経費
+        public decimal Cost { get; set; }
+        // 営業外収益
+        public decimal NonOperationProfit { get; set; }
+
+
+
         public decimal TotalSales
         {
             get { return FinishedSales + UnfinishedSales; }
@@ -39,15 +47,30 @@ namespace Finally.Models
         {
             get { return TotalSales == 0 ? 0 : (TotalProfit / TotalSales) * 100; }
         }
-        public int MiscIncome { get; set; }
 
+
+        // 営業利益
+        public decimal OperatingProfit
+        {
+            get { return TotalProfit - Cost; }
+        }
+
+        // 経常利益
+        public decimal OrdinaryProfit
+        {
+            get { return OperatingProfit + NonOperationProfit; }
+        }
+
+        // 売上不足額
         public decimal SalesShortfall
         {
-            get { return TargetSales - (FinishedSales + UnfinishedSales); }
+            get { return Math.Max(0, TargetSales - (FinishedSales + UnfinishedSales)); }
         }
+
+        // 粗利不足額
         public decimal ProfitShortfall
         {
-            get { return TargetProfit - (FinishedProfit + UnfinishedProfit); }
+            get { return Math.Max(0, TargetProfit - (FinishedProfit + UnfinishedProfit)); }
         }
 
     }
