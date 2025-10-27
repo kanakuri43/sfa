@@ -21,7 +21,6 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="30"/>
                 <RowDefinition Height="30"/>
-                <RowDefinition Height="40"/>
                 <RowDefinition />
                 <RowDefinition Height="60"/>
                 <RowDefinition Height="60"/>
@@ -57,7 +56,6 @@
                 </ComboBox>
             </StackPanel>
             <ComboBox Grid.Row="1"
-                      Margin="0,0,0,4"
                       ItemsSource="{Binding Sections}"
                       DisplayMemberPath="Name"
                       SelectedValuePath="Code"
@@ -69,25 +67,9 @@
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
             </ComboBox>
-            <StackPanel Grid.Row="2"
-                        HorizontalAlignment="Center"
-                        Orientation="Horizontal">
-                <Button Command="{Binding SelectAllEmployees}"
-                        Content="All"
-                        Margin="4"
-                        Width="70"
-                        Style="{DynamicResource MahApps.Styles.Button.Flat}"/>
-                <Button Command="{Binding DeselectAllEmployees}"
-                        Content="Clear"
-                        Margin="4"
-                        Width="70"
-                        Style="{DynamicResource MahApps.Styles.Button.Flat}"/>
 
-            </StackPanel>
-
-            <ListBox Grid.Row="3"
-                     ItemsSource="{Binding Employees}"
-                     SelectionMode="Multiple">
+            <ListBox Grid.Row="2"
+                     ItemsSource="{Binding Employees}">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">

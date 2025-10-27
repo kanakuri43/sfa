@@ -33,7 +33,7 @@ namespace Finally.ViewModels
         private ObservableCollection<Calendar> _calendars;
 
         private Section _selectedSection;
-        private ObservableCollection<Employee> _selectedEmployees;
+        private Employee _selectedEmployee;
         private int _selectedProgressLevel;
         private ProgressLevel _progressLevelMin;
         private ProgressLevel _progressLevelMax;
@@ -84,10 +84,10 @@ namespace Finally.ViewModels
             set { SetProperty(ref _selectedSectionCode, value); }
         }
 
-        public ObservableCollection<Employee> SelectedEmployees
+        public Employee SelectedEmployee
         {
-            get { return _selectedEmployees; }
-            set { SetProperty(ref _selectedEmployees, value); }
+            get { return _selectedEmployee; }
+            set { SetProperty(ref _selectedEmployee, value); }
         }
 
         public ObservableCollection<Section> Sections
@@ -161,7 +161,7 @@ namespace Finally.ViewModels
             OrderDoubleClickCommand = new DelegateCommand(OrderDoubleClickCommandExecute);
 
             // 選択された社員リストを初期化
-            SelectedEmployees = new ObservableCollection<Employee>();
+            //SelectedEmployee = new ObservableCollection<Employee>();
 
             // 年リスト
             int currentYear = DateTime.Now.Year;
@@ -254,9 +254,22 @@ namespace Finally.ViewModels
             using (var context = new AppDbContext())
             {
                 // 案件リスト
-                if (this.SelectedMonthlyTotal != null && this.SelectedEmployees != null && this.SelectedEmployees.Count > 0)
+                if (this.SelectedMonthlyTotal != null && this.SelectedEmployee != null)
                 {
-                    var employeeCodes = string.Join(",", this.SelectedEmployees.Select(e => e.Code));
+                    // <ALL>が選択された場合は部署内の全社員のコードを取得
+                    string employeeCodes;
+                    if (this.SelectedEmployee.Code == 0)
+                    {
+                        var allEmployeeCodes = context.Employees
+                            .Where(e => e.SectionCode == this.SelectedSection.Code && e.State == 0)
+                            .Select(e => e.Code)
+                            .ToList();
+                        employeeCodes = string.Join(",", allEmployeeCodes);
+                    }
+                    else
+                    {
+                        employeeCodes = this.SelectedEmployee.Code.ToString();
+                    }
 
                     var sql = $@"
                             SELECT
@@ -308,7 +321,7 @@ namespace Finally.ViewModels
         private void UpdateScreen()
         {
             // 社員未選択なら即return
-            if (this.SelectedEmployees == null || this.SelectedEmployees.Count == 0)
+            if (this.SelectedEmployee == null)
             {
                 this.MonthlyTotals = new ObservableCollection<MonthlyTotal>();
                 this.YearlyTotals = new ObservableCollection<MonthlyTotal>();
@@ -318,8 +331,20 @@ namespace Finally.ViewModels
 
             using (var context = new AppDbContext())
             {
-                // 選択された社員のコードをカンマ区切りで作成
-                var employeeCodes = string.Join(",", this.SelectedEmployees.Select(e => e.Code));
+                // <ALL>が選択された場合は部署内の全社員のコードを取得
+                string employeeCodes;
+                if (this.SelectedEmployee.Code == 0)
+                {
+                    var allEmployeeCodes = context.Employees
+                        .Where(e => e.SectionCode == this.SelectedSection.Code && e.State == 0)
+                        .Select(e => e.Code)
+                        .ToList();
+                    employeeCodes = string.Join(",", allEmployeeCodes);
+                }
+                else
+                {
+                    employeeCodes = this.SelectedEmployee.Code.ToString();
+                }
 
                 var sql = $@"
                             SELECT
@@ -348,7 +373,7 @@ namespace Finally.ViewModels
                                     WHERE
                                         進捗区分 = 1 
                                         AND 社員コード <> 0 
-                                        AND 社員コード IN ({employeeCodes})
+                                        AND 社員コード IN ({employeeCodes}) 
                                         AND 部門コード = {this.SelectedSection.Code}
                                     GROUP BY
                                         月度
@@ -380,7 +405,7 @@ namespace Finally.ViewModels
                                         LEFT JOIN M物件確度 
                                             ON M物件確度.コード = D物件.物件確度 
                                     WHERE
-                                        D物件担当.社員コード IN ({employeeCodes})
+                                        D物件担当.社員コード IN ({employeeCodes}) 
                                         AND D物件.削除区分 = 0 
                                         AND M物件確度.物件確度区分 BETWEEN 30 AND 100 
                                     GROUP BY
@@ -400,7 +425,7 @@ namespace Finally.ViewModels
                                         LEFT JOIN M物件確度 
                                             ON M物件確度.コード = D物件.物件確度 
                                     WHERE
-                                        D物件担当.社員コード IN ({employeeCodes})
+                                        D物件担当.社員コード IN ({employeeCodes}) 
                                         AND D物件.削除区分 = 0 
                                         AND M物件確度.物件確度区分 >= {this.ProgressLevelMin.Level}
                                         AND M物件確度.物件確度区分 <= {this.ProgressLevelMax.Level}
@@ -415,7 +440,7 @@ namespace Finally.ViewModels
                                     FROM
                                         S進捗経費 
                                     WHERE
-                                        社員コード IN ({employeeCodes})
+                                        社員コード IN ({employeeCodes}) 
                                     GROUP BY
                                         月度
                                 ) AS COST
@@ -427,7 +452,7 @@ namespace Finally.ViewModels
                                     FROM
                                         S進捗営業利益 
                                     WHERE
-                                        社員コード IN ({employeeCodes})
+                                        社員コード IN ({employeeCodes}) 
                                     GROUP BY
                                         月度
                                 ) AS NOP
@@ -447,7 +472,7 @@ namespace Finally.ViewModels
                     var yt = new MonthlyTotal
                     {
                         YearMonth = this.SelectedYear,
-                        EmployeeCode = 0, // 複数選択時は0に設定
+                        EmployeeCode = this.SelectedEmployee.Code,
                         TargetSales = MonthlyTotals.Sum(s => s.TargetSales),
                         TargetProfit = MonthlyTotals.Sum(s => s.TargetProfit),
                         FinishedSales = MonthlyTotals.Sum(s => s.FinishedSales),
@@ -468,15 +493,25 @@ namespace Finally.ViewModels
         {
             using (var context = new AppDbContext())
             {
-                Employees = new ObservableCollection<Employee>(
-                    context.Employees
-                        .Where(e => e.SectionCode == this.SelectedSection.Code && e.State == 0)
-                        .ToList()
-                );
+                var employeeList = context.Employees
+                    .Where(e => e.SectionCode == this.SelectedSection.Code && e.State == 0)
+                    .ToList();
+
+                // リストの先頭に<ALL>を追加
+                var allEmployee = new Employee
+                {
+                    Code = 0,
+                    Name = "<ALL>",
+                    SectionCode = this.SelectedSection.Code,
+                    State = 0
+                };
+                employeeList.Insert(0, allEmployee);
+
+                Employees = new ObservableCollection<Employee>(employeeList);
             }
 
             // 社員選択をクリア
-            SelectedEmployees.Clear();
+            SelectedEmployee = null;
         }
 
         private void YearSelectionChangedExecute()
@@ -497,14 +532,14 @@ namespace Finally.ViewModels
 
         private void EmployeeSelectionChangedExecute(IList selectedItems)
         {
-            // 選択された社員リストを更新
-            SelectedEmployees.Clear();
-            if (selectedItems != null)
+            // 選択された社員を更新（単一選択）
+            if (selectedItems != null && selectedItems.Count > 0)
             {
-                foreach (Employee employee in selectedItems)
-                {
-                    SelectedEmployees.Add(employee);
-                }
+                SelectedEmployee = selectedItems[0] as Employee;
+            }
+            else
+            {
+                SelectedEmployee = null;
             }
             UpdateScreen();
         }
